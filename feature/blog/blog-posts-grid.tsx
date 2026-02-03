@@ -3,8 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Eye } from "lucide-react";
+import { Clock, FileText } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
 import type { BlogPost } from "@/lib/blog";
 import { useState } from "react";
 
@@ -58,15 +59,17 @@ export function BlogPostsGrid({ initialPosts, tags }: BlogPostsGridProps) {
       {/* Posts Grid */}
       {filteredPosts.length === 0 ? (
         <BlurFade delay={0.4} inView>
-          <div className="text-center py-12 max-w-2xl mx-auto">
-            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mb-4">
-              <Eye className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-2xl font-semibold mb-2">Aucun article pour le moment</h3>
-            <p className="text-muted-foreground">
-              Les premières analyses arrivent bientôt. Reviens vite pour découvrir les secrets des SaaS rentables !
-            </p>
-          </div>
+          <Empty className="py-12 border border-solid max-w-2xl mx-auto">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <FileText />
+              </EmptyMedia>
+              <EmptyTitle>Aucun article pour le moment</EmptyTitle>
+              <EmptyDescription>
+                Les premières analyses arrivent bientôt. Reviens vite pour découvrir les secrets des SaaS rentables !
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         </BlurFade>
       ) : (
         <div className="max-w-7xl mx-auto">

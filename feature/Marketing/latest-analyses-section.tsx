@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, FileText } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog-card";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
 import type { BlogPost } from "@/lib/blog";
 
 interface LatestAnalysesSectionProps {
@@ -46,11 +47,17 @@ export function LatestAnalysesSection({ posts, maxPosts = 3 }: LatestAnalysesSec
           </div>
         ) : (
           <BlurFade delay={0.2} inView>
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                Aucun article pour le moment. Revenez bientôt !
-              </p>
-            </div>
+            <Empty className="py-12 border border-solid">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <FileText />
+                </EmptyMedia>
+                <EmptyTitle>Aucun article pour le moment</EmptyTitle>
+                <EmptyDescription>
+                  Revenez bientôt pour découvrir nos analyses !
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           </BlurFade>
         )}
 
