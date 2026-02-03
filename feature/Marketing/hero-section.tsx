@@ -108,9 +108,9 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
           </BlurFade>
 
           {/* Mini stats - Centered */}
+          {/* TODO: Retirer invisible quand les stats seront disponibles */}
           <BlurFade delay={0.5} inView>
-            <div className="flex flex-wrap justify-center gap-12 pt-8 mt-8 border-t border-border/40 relative">
-              {/* Subtle glow line above stats */}
+            <div className="flex flex-wrap justify-center gap-12 pt-8 mt-8 border-t border-border/40 relative invisible">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-px bg-linear-to-r from-transparent via-primary/40 to-transparent" />
 
               <div className="relative text-center group">
@@ -118,7 +118,6 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
                   {postsCount}+
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">SaaS analysés</div>
-                {/* Hover glow */}
                 <div className="absolute inset-0 -z-10 bg-primary/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
 
@@ -127,7 +126,6 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
                   100%
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">Transparence</div>
-                {/* Hover glow */}
                 <div className="absolute inset-0 -z-10 bg-primary/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
 
@@ -136,7 +134,6 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
                   0€
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">Accès gratuit</div>
-                {/* Hover glow */}
                 <div className="absolute inset-0 -z-10 bg-primary/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             </div>
