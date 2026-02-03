@@ -15,9 +15,10 @@ export function generateOrganizationSchema() {
     description:
       "Apprenez à construire des produits SaaS rentables de A à Z. De l'idée au lancement, maîtrisez l'anatomie des SaaS à succès.",
     sameAs: [
-      // Add your social media links here when available
-      // "https://twitter.com/saasanatomy",
-      // "https://linkedin.com/company/saasanatomy",
+      "https://youtube.com/@saasanatomy",
+      "https://www.tiktok.com/@saas_anatomy",
+      "https://x.com/saasanatomy",
+      "https://www.linkedin.com/company/saas-anatomy/",
     ],
   };
 }
