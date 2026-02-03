@@ -14,7 +14,7 @@ interface BlurFadeProps {
   delay?: number;
   yOffset?: number;
   inView?: boolean;
-  inViewMargin?: string;
+  inViewMargin?: string | `${number}px` | `${number}% ${number}% ${number}% ${number}%`;
   blur?: string;
 }
 
@@ -30,7 +30,7 @@ export function BlurFade({
   blur = "6px",
 }: BlurFadeProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: inViewMargin });
+  const isInView = useInView(ref, { once: true, margin: inViewMargin as any });
   const defaultVariants = {
     hidden: { y: yOffset, opacity: 0, filter: `blur(${blur})` },
     visible: { y: 0, opacity: 1, filter: "blur(0px)" },

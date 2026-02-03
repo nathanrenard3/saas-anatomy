@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type HTMLMotionProps } from "framer-motion";
 import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -36,7 +36,7 @@ const ctaButtonVariants = cva(
 );
 
 interface CTAButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends Omit<HTMLMotionProps<"button">, "ref">,
     VariantProps<typeof ctaButtonVariants> {
   children: ReactNode;
   leftIcon?: ReactNode;
@@ -200,6 +200,15 @@ export function CTAButton({
 }
 
 // Link wrapper variant for Next.js Link compatibility
+interface CTAButtonLinkProps
+  extends Omit<HTMLMotionProps<"a">, "ref">,
+    VariantProps<typeof ctaButtonVariants> {
+  children: ReactNode;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
+  href: string;
+}
+
 export function CTAButtonLink({
   children,
   leftIcon,
@@ -209,16 +218,28 @@ export function CTAButtonLink({
   rounded,
   className,
   href,
+  onMouseEnter,
+  onMouseLeave,
   ...props
-}: CTAButtonProps & { href: string }) {
+}: CTAButtonLinkProps) {
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    setIsHovered(true);
+    onMouseEnter?.(e);
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    setIsHovered(false);
+    onMouseLeave?.(e);
+  };
 
   return (
     <motion.a
       href={href}
       className={cn(ctaButtonVariants({ variant, size, rounded, className }))}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2 }}
