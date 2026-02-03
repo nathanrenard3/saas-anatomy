@@ -1,3 +1,7 @@
+# SaaS Anatomy
+
+A modern SaaS learning platform built with Next.js, showcasing how to build profitable SaaS products from scratch.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

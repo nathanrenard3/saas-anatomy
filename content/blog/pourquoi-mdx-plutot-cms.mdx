@@ -1,0 +1,159 @@
+---
+title: "Pourquoi MDX plutôt qu'un CMS Headless ?"
+date: "2026-02-01"
+author: "Renard"
+excerpt: "Une réflexion sur les avantages d'utiliser MDX avec Git plutôt qu'un CMS headless traditionnel pour un blog de développeur."
+tags: ["mdx", "cms", "développement", "opinion"]
+---
+
+# Pourquoi MDX plutôt qu'un CMS Headless ?
+
+Quand j'ai commencé à construire IndieStack, la question s'est posée : **pourquoi ne pas utiliser Contentful, Sanity ou Strapi ?**
+
+## Le problème avec les CMS
+
+Les CMS headless sont excellents, mais ils ajoutent de la complexité :
+
+### 1. Dépendance externe
+
+- Besoin d'un compte tiers
+- API calls à gérer
+- Rate limits possibles
+- Coûts potentiels à l'échelle
+
+### 2. Complexité du workflow
+
+```
+Écrire → Se connecter au CMS → Publier → Attendre le rebuild
+```
+
+Vs avec MDX :
+
+```
+Écrire → Git push → Deploy automatique
+```
+
+### 3. Vendor Lock-in
+
+Avec un CMS propriétaire, migrer devient compliqué. Avec MDX, vos articles sont **portables** :
+
+- Format standard (Markdown)
+- Dans votre repo
+- Versionné avec Git
+- Backup automatique
+
+## Les avantages de MDX + Git
+
+### 1. Version Control natif
+
+Chaque changement est tracké dans Git. Vous pouvez :
+
+- Voir l'historique complet
+- Revenir en arrière facilement
+- Créer des branches pour des brouillons
+- Utiliser Pull Requests pour review
+
+### 2. Workflow de développeur
+
+En tant que développeur, votre environnement préféré est votre éditeur de code. Pourquoi aller ailleurs ?
+
+```bash
+# Créer un article
+touch content/blog/mon-article.mdx
+
+# Éditer avec VSCode/Vim/autre
+vim content/blog/mon-article.mdx
+
+# Publier
+git add . && git commit -m "New article" && git push
+```
+
+### 3. Zero coût
+
+Pas d'abonnement mensuel, pas de limites d'API. Juste votre hébergement (souvent gratuit avec Vercel/Netlify).
+
+### 4. Performance maximale
+
+Avec la génération statique, vos articles sont pré-rendus. Résultat :
+
+- **Temps de chargement ultra-rapide**
+- Pas d'appel API côté client
+- SEO optimal
+- Coûts serveur minimaux
+
+## Quand un CMS a du sens
+
+Je ne dis pas que les CMS sont mauvais. Ils sont parfaits quand :
+
+- ✅ Vous avez des éditeurs non-techniques
+- ✅ Vous avez besoin de workflows d'approbation complexes
+- ✅ Vous gérez des milliers d'articles
+- ✅ Vous avez besoin de fonctionnalités avancées (planification, i18n, etc.)
+
+Mais pour un blog personnel ou d'équipe technique ? **MDX est imbattable**.
+
+## Cas d'usage réel : Automatisation
+
+Voici où ça devient intéressant. Avec MDX, vous pouvez automatiser :
+
+### Script de génération
+
+```javascript
+// scripts/generate-article.js
+import fs from 'fs';
+import { OpenAI } from 'openai';
+
+const openai = new OpenAI();
+
+async function generateArticle(topic) {
+  const response = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [{
+      role: "user",
+      content: `Écris un article de blog sur: ${topic}`
+    }]
+  });
+
+  const content = response.choices[0].message.content;
+  const slug = topic.toLowerCase().replace(/\s+/g, '-');
+  const date = new Date().toISOString().split('T')[0];
+
+  const mdx = `---
+title: "${topic}"
+date: "${date}"
+author: "Auto-generated"
+tags: ["automation"]
+---
+
+${content}
+`;
+
+  fs.writeFileSync(`content/blog/${date}-${slug}.mdx`, mdx);
+}
+
+generateArticle(process.argv[2]);
+```
+
+### Workflow N8N/Zapier
+
+Imaginez :
+
+1. Un trigger hebdomadaire
+2. Récupération de trending topics via API
+3. Génération d'article avec AI
+4. Commit automatique sur GitHub
+5. Déploiement automatique
+
+**Impossible avec un CMS traditionnel sans passer par leur API** (avec rate limits, coûts, etc.).
+
+## Conclusion
+
+Pour IndieStack, MDX était le choix évident :
+
+- **Simplicité** : Moins de moving parts
+- **Contrôle** : Tout est dans le code
+- **Performance** : Génération statique
+- **Automatisation** : Scripts illimités
+- **Coût** : Zero
+
+Et vous, qu'utilisez-vous pour votre blog ?

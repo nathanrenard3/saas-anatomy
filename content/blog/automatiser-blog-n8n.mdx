@@ -1,0 +1,405 @@
+---
+title: "Automatiser l'écriture de blog avec N8N et AI"
+date: "2026-01-30"
+author: "Renard"
+excerpt: "Découvrez comment créer un workflow d'automatisation complète pour générer et publier des articles de blog automatiquement avec N8N, OpenAI et GitHub."
+tags: ["automation", "n8n", "ai", "workflow"]
+---
+
+# Automatiser l'écriture de blog avec N8N et AI
+
+L'une des questions qui revient souvent : **peut-on automatiser l'écriture d'un blog ?**
+
+Spoiler : **Oui, et c'est plus simple qu'on ne le pense avec MDX !**
+
+## Le concept
+
+Voici le workflow complet que nous allons construire :
+
+```
+[Trigger Hebdomadaire]
+      ↓
+[Recherche de trending topics]
+      ↓
+[Génération d'article avec AI]
+      ↓
+[Format en MDX avec frontmatter]
+      ↓
+[Commit sur GitHub]
+      ↓
+[Auto-déploiement Vercel]
+      ↓
+[Notification Slack]
+```
+
+## Prérequis
+
+Vous aurez besoin de :
+
+- Un compte N8N (version cloud ou self-hosted)
+- Une clé API OpenAI
+- Un repo GitHub avec votre blog
+- Vercel connecté à votre repo (pour le déploiement auto)
+
+## Step 1 : Trigger de départ
+
+Dans N8N, créez un nouveau workflow avec un **Schedule Trigger** :
+
+- **Interval** : Chaque semaine
+- **Jour** : Lundi à 9h00
+- **Timezone** : Europe/Paris
+
+## Step 2 : Récupérer des idées de contenu
+
+Plusieurs options ici :
+
+### Option A : Trending topics GitHub
+
+Utilisez l'API GitHub pour récupérer les repos trending :
+
+```javascript
+// HTTP Request Node
+GET https://api.github.com/search/repositories
+?q=created:>2026-01-25&sort=stars&order=desc
+```
+
+### Option B : Hacker News
+
+```javascript
+// HTTP Request Node
+GET https://hacker-news.firebaseio.com/v0/topstories.json
+```
+
+### Option C : Liste statique
+
+Créez simplement une liste de sujets à traiter :
+
+```json
+{
+  "topics": [
+    "Best practices TypeScript 2026",
+    "Comment optimiser Next.js 15",
+    "Guide complet Supabase",
+    "Architecture microservices moderne"
+  ]
+}
+```
+
+## Step 3 : Générer l'article avec AI
+
+Utilisez le **OpenAI Node** dans N8N :
+
+**Configuration** :
+- **Resource** : Message
+- **Operation** : Create
+- **Model** : gpt-4
+- **Messages** :
+
+```javascript
+{
+  "role": "user",
+  "content": `Tu es un expert tech blogger.
+  Écris un article de blog complet (minimum 1000 mots) sur le sujet suivant : {{ $json.topic }}
+
+  L'article doit :
+  - Avoir une introduction engageante
+  - Des sections bien structurées avec des headers
+  - Des exemples de code quand pertinent
+  - Une conclusion avec des takeaways clairs
+  - Être optimisé SEO
+  - Utiliser un ton conversationnel mais professionnel
+  `
+}
+```
+
+## Step 4 : Formatter en MDX
+
+Utilisez un **Code Node** pour créer le fichier MDX :
+
+```javascript
+// Code Node (JavaScript)
+const content = $input.first().json.choices[0].message.content;
+const topic = $node["Get Topic"].json.topic;
+
+// Générer le slug
+const slug = topic
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '') // Remove accents
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/(^-|-$)/g, '');
+
+// Date actuelle
+const date = new Date().toISOString().split('T')[0];
+
+// Extraire les premiers 160 caractères pour l'excerpt
+const excerpt = content
+  .replace(/^#.*\n/, '') // Remove first header
+  .slice(0, 160)
+  .trim() + '...';
+
+// Créer le frontmatter
+const frontmatter = `---
+title: "${topic}"
+date: "${date}"
+author: "Auto-generated AI"
+excerpt: "${excerpt}"
+tags: ["automation", "ai-generated"]
+---`;
+
+// Fichier final
+const filename = `${date}-${slug}.mdx`;
+const fileContent = `${frontmatter}\n\n${content}`;
+
+return {
+  filename,
+  content: fileContent,
+  slug,
+  date
+};
+```
+
+## Step 5 : Créer le fichier sur GitHub
+
+Utilisez le **GitHub Node** :
+
+**Configuration** :
+- **Resource** : File
+- **Operation** : Create
+- **Owner** : votre-username
+- **Repository** : votre-repo
+- **File Path** : `content/blog/{{ $json.filename }}`
+- **Commit Message** : `🤖 Auto-generated article: {{ $json.slug }}`
+- **File Content** : `{{ $json.content }}`
+
+**Important** : Vous devez encoder le contenu en base64 :
+
+```javascript
+// Dans le Code Node précédent, ajoutez :
+const contentBase64 = Buffer.from(fileContent).toString('base64');
+
+return {
+  filename,
+  content: contentBase64, // ← Base64 encoded
+  contentRaw: fileContent, // Pour debug
+  slug,
+  date
+};
+```
+
+## Step 6 : Vérifier le déploiement
+
+Vercel déploie automatiquement dès qu'il détecte un commit. Mais vous pouvez aussi :
+
+### Option A : Attendre et vérifier
+
+Ajoutez un **Wait** node (2 minutes) puis un **HTTP Request** pour vérifier que l'article est live :
+
+```javascript
+GET https://votre-site.com/blog/{{ $json.slug }}
+```
+
+### Option B : Utiliser l'API Vercel
+
+Pour forcer un redéploiement ou vérifier le statut :
+
+```javascript
+POST https://api.vercel.com/v1/deployments
+{
+  "name": "votre-projet",
+  "target": "production"
+}
+```
+
+## Step 7 : Notification
+
+Ajoutez un **Slack Node** pour être notifié :
+
+```javascript
+{
+  "channel": "#blog-updates",
+  "text": ":robot_face: Nouvel article publié !",
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*{{ $json.title }}*\n:calendar: {{ $json.date }}\n:link: https://votre-site.com/blog/{{ $json.slug }}"
+      }
+    }
+  ]
+}
+```
+
+## Workflow complet N8N
+
+Voici le JSON du workflow complet à importer dans N8N :
+
+```json
+{
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": 1,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Votre code de génération de topic"
+      },
+      "name": "Get Topic",
+      "type": "n8n-nodes-base.code",
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "role": "user",
+              "content": "=Écris un article sur {{ $json.topic }}"
+            }
+          ]
+        }
+      },
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code de formatting MDX"
+      },
+      "name": "Format MDX",
+      "type": "n8n-nodes-base.code",
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "create",
+        "owner": "votre-username",
+        "repository": "votre-repo",
+        "filePath": "=content/blog/{{ $json.filename }}",
+        "fileContent": "={{ $json.content }}",
+        "commitMessage": "=🤖 {{ $json.slug }}"
+      },
+      "name": "GitHub",
+      "type": "n8n-nodes-base.github",
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "channel": "#blog",
+        "text": "=:robot_face: Publié : {{ $json.title }}"
+      },
+      "name": "Slack",
+      "type": "n8n-nodes-base.slack",
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [[{"node": "Get Topic", "type": "main", "index": 0}]]
+    },
+    "Get Topic": {
+      "main": [[{"node": "OpenAI", "type": "main", "index": 0}]]
+    },
+    "OpenAI": {
+      "main": [[{"node": "Format MDX", "type": "main", "index": 0}]]
+    },
+    "Format MDX": {
+      "main": [[{"node": "GitHub", "type": "main", "index": 0}]]
+    },
+    "GitHub": {
+      "main": [[{"node": "Slack", "type": "main", "index": 0}]]
+    }
+  }
+}
+```
+
+## Améliorations possibles
+
+### 1. Review humaine
+
+Ajoutez un **Approval Node** avant le commit GitHub :
+
+```
+[Format MDX]
+     ↓
+[Webhook: Send to Slack with Approve/Reject buttons]
+     ↓
+[Wait for Webhook]
+     ↓
+[If approved → GitHub]
+```
+
+### 2. Génération d'images
+
+Utilisez **DALL-E** pour créer une image de couverture :
+
+```javascript
+// Après OpenAI text generation
+{
+  "prompt": "Modern tech blog illustration for article about {{ $json.topic }}",
+  "size": "1792x1024",
+  "quality": "hd"
+}
+```
+
+### 3. SEO automatique
+
+Ajoutez un node pour générer :
+- Meta description optimisée
+- Tags suggérés
+- Internal links vers d'autres articles
+
+### 4. Traduction multi-langue
+
+```
+[Article généré en FR]
+        ↓
+[OpenAI: Traduire en EN]
+        ↓
+[Créer /en/blog/article.mdx]
+```
+
+## Coûts estimés
+
+Pour un article par semaine :
+
+- **N8N** : Gratuit (self-hosted) ou $20/mois (cloud)
+- **OpenAI** : ~$0.20 par article (GPT-4, 2000 tokens)
+- **GitHub** : Gratuit
+- **Vercel** : Gratuit (Hobby plan)
+
+**Total** : ~$1/mois + coût N8N
+
+## Conclusion
+
+Avec cette approche, vous pouvez :
+
+✅ Générer du contenu régulièrement
+✅ Maintenir un blog actif sans effort
+✅ Tester des idées rapidement
+✅ Apprendre l'automatisation
+
+**Mais attention** : L'AI doit être un assistant, pas un remplaçant. Reviewez toujours le contenu avant publication !
+
+Le code complet est disponible sur [GitHub](https://github.com/votre-username/indiestack).
+
+Bon automation ! 🤖
