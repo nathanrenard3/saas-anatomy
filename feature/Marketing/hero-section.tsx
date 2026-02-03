@@ -11,6 +11,26 @@ interface HeroSectionProps {
 export function HeroSection({ postsCount }: HeroSectionProps) {
   return (
     <section className="relative px-4 py-24 md:py-32 overflow-hidden">
+      {/* Grid Background with 13 columns - Vertical gradient stripes (5 columns on mobile, 13 on desktop) */}
+      <div className="absolute inset-0 -z-20 grid grid-cols-5 md:grid-cols-13 h-full w-full" aria-hidden="true">
+        <div className="h-full opacity-[12%] bg-gradient-to-b from-primary/30 via-primary/10 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[8%] bg-gradient-to-t from-primary/20 via-primary/5 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[15%] bg-gradient-to-b from-primary/40 via-primary/15 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[10%] bg-gradient-to-t from-primary/25 via-primary/8 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[13%] bg-gradient-to-b from-primary/35 via-primary/12 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[9%] bg-gradient-to-t from-primary/30 via-primary/10 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[16%] bg-gradient-to-b from-primary/45 via-primary/18 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[11%] bg-gradient-to-t from-primary/35 via-primary/12 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[14%] bg-gradient-to-b from-primary/38 via-primary/14 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[9%] bg-gradient-to-t from-primary/28 via-primary/9 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[12%] bg-gradient-to-b from-primary/32 via-primary/11 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[10%] bg-gradient-to-t from-primary/22 via-primary/7 to-transparent mix-blend-overlay" />
+        <div className="h-full opacity-[8%] bg-gradient-to-b from-primary/25 via-primary/8 to-transparent mix-blend-overlay" />
+      </div>
+
+      {/* Overlay mask for smoother blending */}
+      <div className="absolute inset-0 -z-[19] bg-gradient-to-b from-background/30 via-transparent to-background/50" aria-hidden="true" />
+
       {/* Radial Gradient Background - Primary Layer */}
       <div
         className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_45%_85%,hsl(var(--primary)/0.4),transparent_50%)]"
@@ -23,35 +43,48 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
         aria-hidden="true"
       />
 
-      {/* Corner Brackets - Top */}
+      {/* Enhanced Corner Brackets - Top (more subtle) */}
       <div className="absolute left-0 right-0 top-0 -z-10 h-px">
-        <div className="absolute left-8 top-0 h-8 w-8 border-l border-t border-border/40" />
-        <div className="absolute right-8 top-0 h-8 w-8 border-r border-t border-border/40" />
+        <div className="absolute left-8 top-0 h-10 w-10 border-l border-t border-border/30 rounded-tl-sm" />
+        <div className="absolute right-8 top-0 h-10 w-10 border-r border-t border-border/30 rounded-tr-sm" />
+        {/* Very subtle glow effect on corners */}
+        <div className="absolute left-8 top-0 h-10 w-10 bg-primary/3 blur-lg rounded-tl-lg" />
+        <div className="absolute right-8 top-0 h-10 w-10 bg-primary/3 blur-lg rounded-tr-lg" />
       </div>
 
-      {/* Corner Brackets - Bottom */}
+      {/* Enhanced Corner Brackets - Bottom */}
       <div className="absolute bottom-0 left-0 right-0 -z-10 h-px">
-        <div className="absolute bottom-0 left-8 h-8 w-8 border-b border-l border-border/40" />
-        <div className="absolute bottom-0 right-8 h-8 w-8 border-b border-r border-border/40" />
+        <div className="absolute bottom-0 left-8 h-12 w-12 border-b-2 border-l-2 border-primary/30 rounded-bl-sm" />
+        <div className="absolute bottom-0 right-8 h-12 w-12 border-b-2 border-r-2 border-primary/30 rounded-br-sm" />
+        {/* Glow effect on corners */}
+        <div className="absolute bottom-0 left-8 h-12 w-12 bg-primary/5 blur-xl rounded-bl-lg" />
+        <div className="absolute bottom-0 right-8 h-12 w-12 bg-primary/5 blur-xl rounded-br-lg" />
       </div>
 
       {/* Centered Content */}
       <div className="container mx-auto max-w-4xl">
         <div className="flex flex-col items-center text-center space-y-6 relative z-10">
           <BlurFade delay={0.1} inView>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 backdrop-blur-sm shadow-sm">
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/20">
-                <Search className="h-3 w-3 text-primary" />
+            <div className="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 backdrop-blur-sm shadow-lg shadow-primary/5">
+              {/* Inner glow */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/5 via-transparent to-primary/5 blur-sm" />
+
+              <div className="relative flex h-6 w-6 items-center justify-center rounded-full bg-primary/20 ring-2 ring-primary/30 ring-offset-1 ring-offset-background/50">
+                <Search className="h-3.5 w-3.5 text-primary" />
               </div>
-              <span className="text-sm font-medium text-foreground">Le guide pour que ton premier SaaS rapporte vraiment</span>
+              <span className="relative text-sm font-medium text-foreground">Le guide pour que ton premier SaaS rapporte vraiment</span>
             </div>
           </BlurFade>
 
           <BlurFade delay={0.2} inView>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tighter leading-[1.1] max-w-4xl">
+            <h1 className="relative text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tighter leading-[1.1] max-w-4xl">
               Analyse les SaaS qui{" "}
-              <span className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                rapportent vraiment de l&apos;argent
+              <span className="relative inline-block">
+                <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                  rapportent vraiment de l&apos;argent
+                </span>
+                {/* Very subtle glow effect behind text */}
+                <span className="absolute inset-0 bg-gradient-to-r from-primary/8 via-primary/12 to-primary/8 blur-2xl -z-10" aria-hidden="true" />
               </span>
             </h1>
           </BlurFade>
@@ -76,24 +109,35 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
 
           {/* Mini stats - Centered */}
           <BlurFade delay={0.5} inView>
-            <div className="flex flex-wrap justify-center gap-8 pt-8 mt-8 border-t border-border/40">
-              <div className="text-center">
-                <div className="text-3xl font-bold bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <div className="flex flex-wrap justify-center gap-12 pt-8 mt-8 border-t border-border/40 relative">
+              {/* Subtle glow line above stats */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+
+              <div className="relative text-center group">
+                <div className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                   {postsCount}+
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">SaaS analysés</div>
+                {/* Hover glow */}
+                <div className="absolute inset-0 -z-10 bg-primary/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+
+              <div className="relative text-center group">
+                <div className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                   100%
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">Transparence</div>
+                {/* Hover glow */}
+                <div className="absolute inset-0 -z-10 bg-primary/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+
+              <div className="relative text-center group">
+                <div className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                   0€
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">Accès gratuit</div>
+                {/* Hover glow */}
+                <div className="absolute inset-0 -z-10 bg-primary/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             </div>
           </BlurFade>
