@@ -4,7 +4,6 @@ import "./globals.css";
 import { generateOrganizationSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/json-ld";
 import { GoogleAnalytics } from "@/components/google-analytics";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -74,7 +73,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <GoogleAnalytics />
-        <SpeedInsights />
         <JsonLd data={organizationSchema} />
         {children}
       </body>
