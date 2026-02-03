@@ -476,7 +476,7 @@ const features = [
   },
   {
     Icon: RefreshCcw,
-    name: "Ce que tu peux réutiliser pour ton projet",
+    name: "Ce que tu peux réutiliser pour ton business",
     description: "Stratégies concrètes applicables même en solo.",
     href: "/blog",
     cta: "Voir les analyses",
