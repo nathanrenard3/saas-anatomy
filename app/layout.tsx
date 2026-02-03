@@ -4,6 +4,7 @@ import "./globals.css";
 import { generateOrganizationSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/json-ld";
 import { GoogleAnalytics } from "@/components/google-analytics";
+import { WebVitals } from "@/components/web-vitals";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,6 +74,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <GoogleAnalytics />
+        <WebVitals />
         <JsonLd data={organizationSchema} />
         {children}
       </body>
