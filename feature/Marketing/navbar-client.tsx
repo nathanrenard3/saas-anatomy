@@ -177,8 +177,6 @@ export function NavbarClient({ featuredPosts }: { featuredPosts: BlogPost[] }) {
                 priority
               />
             </motion.div>
-            {/* Subtle glow on hover */}
-            <div className="absolute inset-0 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl bg-primary/10 rounded-full" />
           </Link>
 
           {/* Desktop Navigation */}

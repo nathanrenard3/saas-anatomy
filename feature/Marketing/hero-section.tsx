@@ -72,7 +72,7 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
               <div className="relative flex h-6 w-6 items-center justify-center rounded-full bg-primary/20 ring-2 ring-primary/30 ring-offset-1 ring-offset-background/50">
                 <Search className="h-3.5 w-3.5 text-primary" />
               </div>
-              <span className="relative text-sm font-medium text-foreground">Le guide pour que ton projet rapporte vraiment</span>
+              <span className="relative text-sm font-medium text-foreground">Le guide pour passer du side project aux vrais revenus</span>
             </div>
           </BlurFade>
 
