@@ -29,7 +29,7 @@ export function BlogPostsGrid({ initialPosts, tags }: BlogPostsGridProps) {
             <div className="flex flex-wrap items-center justify-center gap-2">
               <button
                 onClick={() => setSelectedTag(null)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`hover:cursor-pointer px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedTag === null
                     ? "bg-primary text-primary-foreground"
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
@@ -41,7 +41,7 @@ export function BlogPostsGrid({ initialPosts, tags }: BlogPostsGridProps) {
                 <button
                   key={tag}
                   onClick={() => setSelectedTag(tag === selectedTag ? null : tag)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  className={`hover:cursor-pointer px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     selectedTag === tag
                       ? "bg-primary text-primary-foreground"
                       : "bg-secondary text-secondary-foreground hover:bg-secondary/80"

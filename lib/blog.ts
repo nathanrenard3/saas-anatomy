@@ -6,8 +6,38 @@ import type { PortableTextBlock } from '@portabletext/types'
 // Image URL builder for Sanity images
 const builder = imageUrlBuilder(client)
 
-export function urlForImage(source: any) {
-  return builder.image(source).auto('format').fit('max')
+/**
+ * Génère une URL optimisée pour les images Sanity
+ * @param source - Source de l'image Sanity
+ * @param options - Options de transformation
+ * @returns URL de l'image optimisée
+ */
+export function urlForImage(
+  source: any,
+  options?: {
+    width?: number
+    height?: number
+    quality?: number
+  }
+) {
+  let imageBuilder = builder.image(source).auto('format').fit('max')
+
+  if (options?.width) {
+    imageBuilder = imageBuilder.width(options.width)
+  }
+
+  if (options?.height) {
+    imageBuilder = imageBuilder.height(options.height)
+  }
+
+  if (options?.quality) {
+    imageBuilder = imageBuilder.quality(options.quality)
+  } else {
+    // Qualité par défaut optimisée pour le web
+    imageBuilder = imageBuilder.quality(85)
+  }
+
+  return imageBuilder
 }
 
 // Helper function to calculate reading time from PortableText

@@ -14,13 +14,17 @@ const components: PortableTextComponents = {
       if (!value?.asset) return null
 
       return (
-        <div className="relative w-full h-96 my-8 rounded-lg overflow-hidden">
-          <Image
-            src={urlForImage(value).width(1200).height(630).url()}
-            alt={value.alt || 'Article image'}
-            fill
-            className="object-cover"
-          />
+        <div className="my-8">
+          <div className="relative w-full h-96 rounded-lg overflow-hidden">
+            <Image
+              src={urlForImage(value, { width: 1200, height: 630, quality: 90 }).url()}
+              alt={value.alt || 'Article illustration image'}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+              className="object-cover"
+              loading="lazy"
+            />
+          </div>
           {value.alt && (
             <p className="text-sm text-center text-muted-foreground mt-2 italic">
               {value.alt}

@@ -9,6 +9,11 @@ import { BlurFade } from "@/components/magicui/blur-fade";
 import { PortableTextContent } from "@/components/portable-text-content";
 import { RelatedPostsSidebar } from "@/components/related-posts-sidebar";
 import { NewsletterSidebarCTA } from "@/components/newsletter-sidebar-cta";
+import { generateArticleSchema, generateBreadcrumbSchema } from "@/lib/seo";
+import { JsonLd } from "@/components/json-ld";
+
+// ISR Revalidation: revalidate every 24 hours to fetch article updates
+export const revalidate = 86400; // 24 hours in seconds
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -27,9 +32,47 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
+  const siteUrl = "https://saas-anatomy.com";
+  const imageUrl = post.image?.startsWith("http")
+    ? post.image
+    : post.image
+    ? `${siteUrl}${post.image}`
+    : `${siteUrl}/images/default-thumb.webp`;
+
   return {
     title: `${post.title} | SaaS Anatomy`,
     description: post.excerpt,
+    authors: [{ name: "SaaS Anatomy" }],
+    keywords: post.tags?.join(", "),
+    openGraph: {
+      type: "article",
+      locale: "fr_FR",
+      url: `${siteUrl}/blog/${slug}`,
+      siteName: "SaaS Anatomy",
+      title: post.title,
+      description: post.excerpt,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+      publishedTime: post.date,
+      modifiedTime: post.date,
+      authors: ["SaaS Anatomy"],
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: [imageUrl],
+    },
+    alternates: {
+      canonical: `${siteUrl}/blog/${slug}`,
+    },
   };
 }
 
@@ -48,8 +91,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   // Get all posts for related posts sidebar
   const allPosts = await getAllPosts();
 
+  // Generate structured data schemas
+  const articleSchema = generateArticleSchema(post);
+  const breadcrumbSchema = generateBreadcrumbSchema(post);
+
   return (
     <div className="min-h-screen relative">
+      {/* JSON-LD Structured Data */}
+      <JsonLd data={articleSchema} />
+      <JsonLd data={breadcrumbSchema} />
+
       {/* Background Effects */}
       <div
         className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_20%,hsl(var(--primary)/0.1),transparent_50%)]"

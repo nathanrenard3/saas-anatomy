@@ -4,6 +4,7 @@ import matter from 'gray-matter';
 import { Navbar } from "@/feature/Marketing/navbar";
 import { Footer } from "@/feature/Marketing/footer";
 import { MarkdownContent } from "@/components/markdown-content";
+import type { Metadata } from "next";
 
 async function getLegalContent() {
   const filePath = path.join(process.cwd(), 'content', 'legal', 'mentions-legales.md');
@@ -29,7 +30,29 @@ export default async function LegalPage() {
   );
 }
 
-export const metadata = {
+const siteUrl = "https://saas-anatomy.com";
+
+export const metadata: Metadata = {
   title: 'Mentions Légales | SaaS Anatomy',
-  description: 'Mentions légales du site SaaS Anatomy',
+  description: 'Mentions légales et informations sur l\'éditeur du site SaaS Anatomy',
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    url: `${siteUrl}/legal`,
+    siteName: "SaaS Anatomy",
+    title: 'Mentions Légales | SaaS Anatomy',
+    description: 'Mentions légales et informations sur l\'éditeur du site SaaS Anatomy',
+  },
+  twitter: {
+    card: "summary",
+    title: 'Mentions Légales | SaaS Anatomy',
+    description: 'Mentions légales et informations sur l\'éditeur du site SaaS Anatomy',
+  },
+  alternates: {
+    canonical: `${siteUrl}/legal`,
+  },
+  robots: {
+    index: false, // Legal pages are typically not indexed
+    follow: true,
+  },
 };

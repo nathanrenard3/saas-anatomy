@@ -4,6 +4,7 @@ import matter from 'gray-matter';
 import { Navbar } from "@/feature/Marketing/navbar";
 import { Footer } from "@/feature/Marketing/footer";
 import { MarkdownContent } from "@/components/markdown-content";
+import type { Metadata } from "next";
 
 async function getPrivacyContent() {
   const filePath = path.join(process.cwd(), 'content', 'legal', 'politique-confidentialite.md');
@@ -29,7 +30,29 @@ export default async function PrivacyPage() {
   );
 }
 
-export const metadata = {
+const siteUrl = "https://saas-anatomy.com";
+
+export const metadata: Metadata = {
   title: 'Politique de Confidentialité | SaaS Anatomy',
-  description: 'Politique de confidentialité et protection des données du site SaaS Anatomy',
+  description: 'Politique de confidentialité et protection des données personnelles du site SaaS Anatomy. Découvrez comment nous traitons vos données.',
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    url: `${siteUrl}/privacy`,
+    siteName: "SaaS Anatomy",
+    title: 'Politique de Confidentialité | SaaS Anatomy',
+    description: 'Politique de confidentialité et protection des données personnelles du site SaaS Anatomy. Découvrez comment nous traitons vos données.',
+  },
+  twitter: {
+    card: "summary",
+    title: 'Politique de Confidentialité | SaaS Anatomy',
+    description: 'Politique de confidentialité et protection des données personnelles du site SaaS Anatomy.',
+  },
+  alternates: {
+    canonical: `${siteUrl}/privacy`,
+  },
+  robots: {
+    index: false, // Privacy pages are typically not indexed
+    follow: true,
+  },
 };
