@@ -4,9 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { CTAButtonLink } from "@/components/ui/cta-button";
-import { Menu, X, BookOpen, ArrowRight } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import type { BlogPost } from "@/lib/blog";
 
 function HamburgerButton({
@@ -54,22 +53,14 @@ function MobileNav({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed top-16 left-0 right-0 z-50 bg-gradient-to-b from-background via-background to-background/95 backdrop-blur-xl shadow-2xl md:hidden border-b border-border/40"
+            className="fixed top-16 left-0 right-0 z-50 bg-linear-to-b from-background via-background to-background/95 backdrop-blur-xl shadow-2xl md:hidden border-b border-border/40"
           >
             {/* Subtle gradient glow at top */}
             <div className="absolute inset-x-0 top-0 h-24 bg-[radial-gradient(ellipse_at_50%_0%,hsl(var(--primary)/0.1),transparent)]" />
 
             <nav className="relative px-6 py-6 space-y-4">
-              <Link
-                href="/blog"
-                onClick={onClose}
-                className="flex items-center gap-3 px-4 py-3 text-lg font-medium rounded-lg hover:bg-accent hover:text-primary transition-all duration-200"
-              >
-                <BookOpen className="size-5" />
-                Tous les articles
-              </Link>
-
-              <div className="border-t border-border/40 pt-4 space-y-2">
+              {/* Temporarily commented out until we have more articles */}
+              {/* <div className="border-t border-border/40 pt-4 space-y-2">
                 <p className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Articles en vedette
                 </p>
@@ -83,7 +74,7 @@ function MobileNav({
                     {post.title}
                   </Link>
                 ))}
-              </div>
+              </div> */}
 
               <div className="pt-4">
                 <CTAButtonLink
@@ -129,8 +120,8 @@ export function NavbarClient({ featuredPosts }: { featuredPosts: BlogPost[] }) {
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_0%,hsl(var(--primary)/0.15),transparent_50%)]" />
 
         {/* Decorative corner accents */}
-        <div className="absolute left-8 bottom-0 h-px w-16 bg-gradient-to-r from-primary/40 to-transparent" />
-        <div className="absolute right-8 bottom-0 h-px w-16 bg-gradient-to-l from-primary/40 to-transparent" />
+        <div className="absolute left-8 bottom-0 h-px w-16 bg-linear-to-r from-primary/40 to-transparent" />
+        <div className="absolute right-8 bottom-0 h-px w-16 bg-linear-to-l from-primary/40 to-transparent" />
 
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           {/* Logo */}
