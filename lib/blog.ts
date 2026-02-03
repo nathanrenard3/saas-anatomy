@@ -1,17 +1,32 @@
-import fs from 'fs'
-import path from 'path'
-import matter from 'gray-matter'
-import readingTime from 'reading-time'
+import { client } from '@/sanity/lib/client'
+import { groq } from 'next-sanity'
+import imageUrlBuilder from '@sanity/image-url'
+import type { PortableTextBlock } from '@portabletext/types'
 
-const contentDirectory = path.join(process.cwd(), 'content/blog')
+// Image URL builder for Sanity images
+const builder = imageUrlBuilder(client)
 
-// Helper function to translate reading time to French
-function translateReadingTime(readingTimeText: string): string {
-  // Convert "X min read" or "X minute read" to "X min de lecture"
-  return readingTimeText
-    .replace(/(\d+)\s*min(?:ute)?(?:s)?\s*read/i, '$1 min de lecture')
-    .replace(/less than a minute read/i, 'moins d\'une minute de lecture')
-    .replace(/1 min read/i, '1 min de lecture')
+export function urlForImage(source: any) {
+  return builder.image(source).auto('format').fit('max')
+}
+
+// Helper function to calculate reading time from PortableText
+function calculateReadingTime(content: PortableTextBlock[]): string {
+  if (!content || content.length === 0) return '1 min de lecture'
+
+  // Extract text from PortableText blocks
+  const text = content
+    .filter((block: any) => block._type === 'block')
+    .map((block: any) =>
+      block.children?.map((child: any) => child.text).join('') || ''
+    )
+    .join(' ')
+
+  // Calculate reading time (average 200 words per minute in French)
+  const words = text.trim().split(/\s+/).length
+  const minutes = Math.ceil(words / 200)
+
+  return minutes === 1 ? '1 min de lecture' : `${minutes} min de lecture`
 }
 
 export type BlogPost = {
@@ -19,113 +34,98 @@ export type BlogPost = {
   title: string
   date: string
   excerpt: string
-  content: string
+  content: PortableTextBlock[]
   author?: string
   tags?: string[]
   readingTime: string
   image?: string
+  published?: boolean
 }
 
 export async function getAllPosts(): Promise<BlogPost[]> {
-  // Check if directory exists
-  if (!fs.existsSync(contentDirectory)) {
-    return []
-  }
+  const query = groq`
+    *[_type == "post" && published == true] | order(date desc) {
+      "slug": slug.current,
+      title,
+      date,
+      excerpt,
+      content,
+      tags,
+      "image": image.asset->url,
+      published
+    }
+  `
 
-  const files = fs.readdirSync(contentDirectory)
+  const posts = await client.fetch<BlogPost[]>(query)
 
-  const posts = files
-    .filter((file) => file.endsWith('.mdx') || file.endsWith('.md'))
-    .map((file) => {
-      const slug = file.replace(/\.mdx?$/, '')
-      const filePath = path.join(contentDirectory, file)
-      const fileContent = fs.readFileSync(filePath, 'utf8')
-      const { data, content } = matter(fileContent)
-
-      return {
-        slug,
-        title: data.title || slug,
-        date: data.date || new Date().toISOString(),
-        excerpt: data.excerpt || content.slice(0, 160) + '...',
-        content,
-        author: data.author,
-        tags: data.tags || [],
-        readingTime: translateReadingTime(readingTime(content).text),
-        image: data.image,
-      }
-    })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-
-  return posts
+  // Add reading time to each post
+  return posts.map((post) => ({
+    ...post,
+    readingTime: calculateReadingTime(post.content),
+  }))
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  try {
-    const filePath = path.join(contentDirectory, `${slug}.mdx`)
-
-    if (!fs.existsSync(filePath)) {
-      // Try .md extension
-      const mdFilePath = path.join(contentDirectory, `${slug}.md`)
-      if (!fs.existsSync(mdFilePath)) {
-        return null
-      }
-      const fileContent = fs.readFileSync(mdFilePath, 'utf8')
-      const { data, content } = matter(fileContent)
-
-      return {
-        slug,
-        title: data.title || slug,
-        date: data.date || new Date().toISOString(),
-        excerpt: data.excerpt || content.slice(0, 160) + '...',
-        content,
-        author: data.author,
-        tags: data.tags || [],
-        readingTime: translateReadingTime(readingTime(content).text),
-        image: data.image,
-      }
-    }
-
-    const fileContent = fs.readFileSync(filePath, 'utf8')
-    const { data, content } = matter(fileContent)
-
-    return {
-      slug,
-      title: data.title || slug,
-      date: data.date || new Date().toISOString(),
-      excerpt: data.excerpt || content.slice(0, 160) + '...',
+  const query = groq`
+    *[_type == "post" && slug.current == $slug && published == true][0] {
+      "slug": slug.current,
+      title,
+      date,
+      excerpt,
       content,
-      author: data.author,
-      tags: data.tags || [],
-      readingTime: translateReadingTime(readingTime(content).text),
-      image: data.image,
+      tags,
+      "image": image.asset->url,
+      published
     }
-  } catch (error) {
-    return null
+  `
+
+  const post = await client.fetch<BlogPost | null>(query, { slug })
+
+  if (!post) return null
+
+  return {
+    ...post,
+    readingTime: calculateReadingTime(post.content),
   }
 }
 
 export async function getAllTags(): Promise<string[]> {
-  const posts = await getAllPosts()
-  const tags = new Set<string>()
+  const query = groq`
+    *[_type == "post" && published == true] {
+      tags
+    }.tags[] | order(@)
+  `
 
-  posts.forEach((post) => {
-    post.tags?.forEach((tag) => tags.add(tag))
-  })
+  const tags = await client.fetch<string[]>(query)
 
-  return Array.from(tags).sort()
+  // Remove duplicates
+  return Array.from(new Set(tags)).sort()
 }
 
 export async function getFeaturedPosts(slugs: readonly string[]): Promise<BlogPost[]> {
-  const posts = await getAllPosts()
-  const featuredPosts: BlogPost[] = []
-
-  // Preserve the order from the slugs array
-  for (const slug of slugs) {
-    const post = posts.find((p) => p.slug === slug)
-    if (post) {
-      featuredPosts.push(post)
+  const query = groq`
+    *[_type == "post" && slug.current in $slugs && published == true] {
+      "slug": slug.current,
+      title,
+      date,
+      excerpt,
+      content,
+      tags,
+      "image": image.asset->url,
+      published
     }
-  }
+  `
 
-  return featuredPosts
+  const posts = await client.fetch<BlogPost[]>(query, { slugs })
+
+  // Add reading time and preserve order from slugs array
+  const postsWithReadingTime = posts.map((post) => ({
+    ...post,
+    readingTime: calculateReadingTime(post.content),
+  }))
+
+  // Sort by original slugs order
+  return slugs
+    .map((slug) => postsWithReadingTime.find((p) => p.slug === slug))
+    .filter((post): post is BlogPost => post !== undefined)
 }

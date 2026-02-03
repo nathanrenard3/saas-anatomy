@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
 import { ArrowLeft, ArrowRight, Calendar, ChevronRight, Clock, Home, RefreshCw } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
-import { MarkdownContent } from "@/components/markdown-content";
+import { PortableTextContent } from "@/components/portable-text-content";
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -131,7 +131,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
               {/* Article Content */}
               <BlurFade delay={0.3} inView>
-                <MarkdownContent content={post.content} />
+                <PortableTextContent content={post.content} />
               </BlurFade>
 
               {/* Article Footer */}
@@ -144,16 +144,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         Tous les articles
                       </Link>
                     </Button>
-
-                    {post.tags && post.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2 justify-end">
-                        {post.tags.map((tag) => (
-                          <Badge key={tag} variant="outline" className="rounded-full">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </footer>
               </BlurFade>
