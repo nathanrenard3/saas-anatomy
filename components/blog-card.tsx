@@ -19,7 +19,7 @@ export function BlogCard({ post, className }: BlogCardProps) {
       {/* Square Image on the left */}
       <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-linear-to-br from-primary/20 via-primary/10 to-background">
         <Image
-          src={post.image || "https://placehold.co/200x200/1a1a1a/666666?text=SaaS"}
+          src={post.image || "/images/default-thumb.webp"}
           alt={post.title}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-110"

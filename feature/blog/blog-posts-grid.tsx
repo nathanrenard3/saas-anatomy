@@ -76,20 +76,14 @@ export function BlogPostsGrid({ initialPosts, tags }: BlogPostsGridProps) {
                 <Link href={`/blog/${post.slug}`} className="group block h-full">
                   <article className="relative rounded-2xl border border-border/50 bg-card overflow-hidden transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 h-full flex flex-col">
                     {/* Image */}
-                    {post.image ? (
-                      <div className="relative w-full h-48 overflow-hidden bg-muted">
-                        <Image
-                          src={post.image}
-                          alt={post.title}
-                          fill
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                      </div>
-                    ) : (
-                      <div className="relative w-full h-48 bg-linear-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center">
-                        <Eye className="h-12 w-12 text-primary/40" />
-                      </div>
-                    )}
+                    <div className="relative w-full h-48 overflow-hidden bg-muted">
+                      <Image
+                        src={post.image || "/images/default-thumb.webp"}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
 
                     {/* Content */}
                     <div className="p-6 flex flex-col flex-1">

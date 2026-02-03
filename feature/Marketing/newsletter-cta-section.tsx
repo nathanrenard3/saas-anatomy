@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { BlurFade } from "@/components/magicui/blur-fade";
-import { Button } from "@/components/ui/button";
+import { CTAButton } from "@/components/ui/cta-button";
 import { Input } from "@/components/ui/input";
-import { Mail, Sparkles, TrendingUp, Zap } from "lucide-react";
+import { Mail, Sparkles, TrendingUp, Zap, ArrowRight } from "lucide-react";
 
 export function NewsletterCTASection() {
   const [email, setEmail] = useState("");
@@ -99,7 +99,7 @@ export function NewsletterCTASection() {
               {/* Form */}
               <BlurFade delay={0.4} inView>
                 <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <Input
                       type="email"
                       placeholder="ton@email.com"
@@ -107,16 +107,17 @@ export function NewsletterCTASection() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       disabled={isLoading}
-                      className="flex-1 h-12 bg-background border-border focus:border-primary transition-colors"
+                      className="flex-1 h-11 bg-background border-border focus:border-primary transition-colors"
                     />
-                    <Button
+                    <CTAButton
                       type="submit"
-                      size="lg"
+                      size="default"
                       disabled={isLoading}
-                      className="h-12 px-8 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20"
+                      className="h-11 px-6"
+                      rightIcon={!isLoading ? <ArrowRight className="w-4 h-4" /> : undefined}
                     >
                       {isLoading ? "..." : "S'inscrire"}
-                    </Button>
+                    </CTAButton>
                   </div>
 
                   {status === "success" && (

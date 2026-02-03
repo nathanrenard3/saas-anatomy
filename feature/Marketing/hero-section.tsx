@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Eye, Search } from "lucide-react";
+import { CTAButtonLink } from "@/components/ui/cta-button";
+import { ArrowRight, Search } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
 
 interface HeroSectionProps {
@@ -65,17 +64,14 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
           </BlurFade>
 
           <BlurFade delay={0.4} inView>
-            <Button
-              asChild
+            <CTAButtonLink
+              href="/blog"
               size="lg"
-              className="text-base bg-linear-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20 ring-2 ring-primary/50 ring-offset-2 ring-offset-background px-8 rounded-full transition-all duration-200"
+              className="text-base px-8"
+              rightIcon={<ArrowRight className="w-5 h-5" />}
             >
-              <Link href="/blog">
-                <Eye className="w-5 h-5 mr-2" />
-                Entrer dans les coulisses
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Link>
-            </Button>
+              Entrer dans les coulisses
+            </CTAButtonLink>
           </BlurFade>
 
           {/* Mini stats - Centered */}

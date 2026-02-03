@@ -5,7 +5,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Menu, X, BookOpen } from "lucide-react";
+import { CTAButtonLink } from "@/components/ui/cta-button";
+import { Menu, X, BookOpen, ArrowRight } from "lucide-react";
 import type { BlogPost } from "@/lib/blog";
 
 function HamburgerButton({
@@ -85,15 +86,14 @@ function MobileNav({
               </div>
 
               <div className="pt-4">
-                <Button
-                  asChild
-                  className="w-full rounded-full bg-gradient-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20"
-                  size="lg"
+                <CTAButtonLink
+                  href="/blog"
+                  className="w-full"
+                  size="default"
+                  onClick={onClose}
                 >
-                  <Link href="/blog" onClick={onClose}>
-                    En apprendre plus
-                  </Link>
-                </Button>
+                  En apprendre plus
+                </CTAButtonLink>
               </div>
             </nav>
           </motion.div>
@@ -165,15 +165,13 @@ export function NavbarClient({ featuredPosts }: { featuredPosts: BlogPost[] }) {
 
           {/* Right Side */}
           <div className="flex items-center gap-3">
-            <Button
-              asChild
-              className="hidden md:flex rounded-full bg-gradient-to-b from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-lg shadow-primary/20 ring-2 ring-primary/50 ring-offset-2 ring-offset-background transition-all duration-200 hover:scale-105"
-              size="default"
+            <CTAButtonLink
+              href="/blog"
+              className="hidden md:flex"
+              size="sm"
             >
-              <Link href="/blog">
-                En apprendre plus
-              </Link>
-            </Button>
+              En apprendre plus
+            </CTAButtonLink>
             <HamburgerButton
               isOpen={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

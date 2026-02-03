@@ -33,4 +33,4 @@ SaaS Anatomy ne pourra être tenu responsable des dommages directs ou indirects 
 
 Pour toute question concernant ces mentions légales :
 
-**Email** : saas-anatomy@gmail.com
+**Email** : saas.anatomy@gmail.com

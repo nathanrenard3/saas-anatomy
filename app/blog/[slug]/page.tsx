@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
-import { ArrowLeft, ArrowRight, Calendar, ChevronRight, Clock, Home, RefreshCw } from "lucide-react";
+import { ArrowLeft, Calendar, ChevronRight, Clock, Home, RefreshCw } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { PortableTextContent } from "@/components/portable-text-content";
+import { RelatedPostsSidebar } from "@/components/related-posts-sidebar";
+import { NewsletterSidebarCTA } from "@/components/newsletter-sidebar-cta";
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -43,11 +45,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
-  // Get related posts
+  // Get all posts for related posts sidebar
   const allPosts = await getAllPosts();
-  const relatedPosts = allPosts
-    .filter((p) => p.slug !== slug)
-    .slice(0, 5);
 
   return (
     <div className="min-h-screen relative">
@@ -149,61 +148,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </BlurFade>
             </article>
 
-            {/* Sidebar - Related Posts */}
+            {/* Sidebar */}
             <aside className="lg:sticky lg:top-24 h-fit space-y-6">
-              <BlurFade delay={0.3} inView>
-                <div className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-6">
-                  <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                    <ArrowRight className="h-5 w-5 text-primary" />
-                    Autres analyses
-                  </h3>
-
-                  {relatedPosts.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">Aucun autre article pour le moment.</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {relatedPosts.map((relatedPost) => (
-                        <Link
-                          key={relatedPost.slug}
-                          href={`/blog/${relatedPost.slug}`}
-                          className="block group"
-                        >
-                          <article className="rounded-xl border border-border/50 bg-background/50 p-4 transition-all duration-300 hover:border-primary/50 hover:shadow-md hover:shadow-primary/5">
-                            <h4 className="font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors leading-snug">
-                              {relatedPost.title}
-                            </h4>
-                            <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-                              {relatedPost.excerpt}
-                            </p>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              <span>{relatedPost.readingTime}</span>
-                            </div>
-                          </article>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </BlurFade>
-
-              {/* Newsletter CTA */}
-              <BlurFade delay={0.4} inView>
-                <div className="rounded-2xl border border-primary/20 bg-linear-to-br from-primary/10 to-background p-6">
-                  <h3 className="text-lg font-bold mb-3">
-                    Ne rate rien
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Reçois les nouvelles analyses directement par email.
-                  </p>
-                  <Button asChild size="sm" className="w-full rounded-full">
-                    <Link href="/#newsletter">
-                      M&apos;inscrire
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </BlurFade>
+              <RelatedPostsSidebar posts={allPosts} currentSlug={slug} />
+              <NewsletterSidebarCTA />
             </aside>
           </div>
         </div>

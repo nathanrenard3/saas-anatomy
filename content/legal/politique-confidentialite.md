@@ -11,7 +11,7 @@ SaaS Anatomy s'engage à protéger votre vie privée et à traiter vos données 
 **SaaS Anatomy**
 Édité par Nathan Renard
 14 boulevard Maréchal Leclerc, 38000 Grenoble
-Email : saas-anatomy@gmail.com
+Email : saas.anatomy@gmail.com
 
 ## Données collectées
 
@@ -68,7 +68,7 @@ Conformément au RGPD, vous disposez des droits suivants :
 - **Droit à la portabilité** : Vous pouvez recevoir vos données dans un format structuré
 - **Droit de retrait du consentement** : Vous pouvez vous désinscrire de la newsletter à tout moment via le lien dans nos emails
 
-Pour exercer ces droits, contactez-nous à : **saas-anatomy@gmail.com**
+Pour exercer ces droits, contactez-nous à : **saas.anatomy@gmail.com**
 
 Nous répondrons à votre demande dans un délai d'un mois maximum.
 
@@ -106,6 +106,6 @@ Ce site n'est pas destiné aux personnes de moins de 16 ans. Nous ne collectons 
 
 Pour toute question sur cette politique de confidentialité :
 
-**Email** : saas-anatomy@gmail.com
+**Email** : saas.anatomy@gmail.com
 
 En utilisant ce site et en vous inscrivant à notre newsletter, vous acceptez les termes de cette politique.
