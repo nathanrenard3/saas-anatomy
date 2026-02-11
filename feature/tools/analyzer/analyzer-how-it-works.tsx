@@ -20,7 +20,7 @@ const STEPS = [
 
 export function AnalyzerHowItWorks() {
   return (
-    <section className="px-4 py-16 bg-gradient-to-b from-background to-muted/20">
+    <section className="px-4 py-16 bg-linear-to-b from-background to-muted/20">
       <div className="container mx-auto max-w-3xl space-y-12">
         <BlurFade delay={0.1} inView>
           <div className="space-y-4 text-center">
