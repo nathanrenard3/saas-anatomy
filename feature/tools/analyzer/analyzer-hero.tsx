@@ -109,15 +109,14 @@ export function AnalyzerHero() {
 
             <BlurFade delay={0.2} inView>
               <h1 className="relative text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tighter leading-[1.1] max-w-4xl">
-                Analyse ta{" "}
+                Audite le{" "}
                 <span className="relative inline-block">
                   <span className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                    landing page
+                    copywriting
                   </span>
                   <span className="absolute inset-0 bg-linear-to-r from-primary/8 via-primary/12 to-primary/8 blur-2xl -z-10" aria-hidden="true" />
-                </span>
-                <br />
-                en 30 secondes
+                </span>{" "}
+                de ta page en 30 secondes
               </h1>
             </BlurFade>
 

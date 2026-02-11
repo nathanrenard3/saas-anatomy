@@ -170,7 +170,7 @@ export function Footer({ latestPosts = [] }: FooterProps) {
                   href="/tools/landing-page-analyzer"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Analyse de landing page
+                  Analyse de copywriting
                 </Link>
               </li>
             </ul>

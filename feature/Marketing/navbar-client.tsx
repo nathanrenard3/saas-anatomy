@@ -96,7 +96,7 @@ function MobileNav({
                   className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-primary/10 hover:text-primary transition-all duration-300 border border-transparent hover:border-primary/20"
                 >
                   <Search className="w-4 h-4 text-primary" />
-                  Analyse de landing page
+                  Analyse de copywriting
                 </Link>
               </motion.div>
 
@@ -202,7 +202,7 @@ export function NavbarClient({ featuredPosts }: { featuredPosts: BlogPost[] }) {
                             <Search className="w-3.5 h-3.5 text-primary" />
                           </div>
                           <div>
-                            <span className="text-sm font-medium">Analyse de landing page</span>
+                            <span className="text-sm font-medium">Analyse de copywriting</span>
                             <p className="text-xs text-muted-foreground mt-0.5">
                               Évaluez votre copywriting avec l&apos;IA
                             </p>
