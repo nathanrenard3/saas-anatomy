@@ -5,7 +5,15 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CTAButtonLink } from "@/components/ui/cta-button";
-import { Menu, X } from "lucide-react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { Menu, X, Search } from "lucide-react";
 import type { BlogPost } from "@/lib/blog";
 
 function HamburgerButton({
@@ -74,28 +82,23 @@ function MobileNav({
             <div className="absolute right-6 top-0 w-px h-4 bg-gradient-to-b from-primary/50 to-transparent" />
 
             <nav className="relative px-6 py-8 space-y-6">
-              {/* Temporarily commented out until we have more articles */}
-              {/* <div className="border-t border-border/40 pt-6 space-y-3">
-                <p className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Articles en vedette
-                </p>
-                {featuredPosts.map((post, index) => (
-                  <motion.div
-                    key={post.slug}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      onClick={onClose}
-                      className="block px-4 py-3 text-sm font-medium rounded-lg hover:bg-primary/10 hover:text-primary transition-all duration-300 border border-transparent hover:border-primary/20"
-                    >
-                      {post.title}
-                    </Link>
-                  </motion.div>
-                ))}
-              </div> */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.05 }}
+              >
+                <span className="block px-4 py-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Outils gratuits
+                </span>
+                <Link
+                  href="/tools/landing-page-analyzer"
+                  onClick={onClose}
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-primary/10 hover:text-primary transition-all duration-300 border border-transparent hover:border-primary/20"
+                >
+                  <Search className="w-4 h-4 text-primary" />
+                  Analyse de landing page
+                </Link>
+              </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -159,41 +162,60 @@ export function NavbarClient({ featuredPosts }: { featuredPosts: BlogPost[] }) {
         <div className="absolute inset-x-0 -bottom-8 h-8 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
 
         <div className="relative mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-          {/* Logo with enhanced hover effect */}
-          <Link
-            href="/"
-            className="relative flex items-center gap-2 group"
-          >
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
+          {/* Left side: Logo + Navigation */}
+          <div className="flex items-center gap-8">
+            <Link
+              href="/"
+              className="relative flex items-center gap-2 group"
             >
-              <Image
-                src="/logo.png"
-                alt="SaaS Anatomy"
-                width={280}
-                height={64}
-                className="h-14 w-auto transition-all duration-300 group-hover:brightness-110"
-                priority
-              />
-            </motion.div>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
-            {/* Temporarily commented out until we have more articles */}
-            {/* {featuredPosts.map((post) => (
-              <Link
-                key={post.slug}
-                href={`/blog/${post.slug}`}
-                className="relative px-5 py-2.5 text-sm font-medium rounded-full hover:bg-primary/5 transition-all duration-300 max-w-[200px] truncate group overflow-hidden"
-                title={post.title}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
               >
-                <span className="relative z-10">{post.title}</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </Link>
-            ))} */}
-          </nav>
+                <Image
+                  src="/logo.png"
+                  alt="SaaS Anatomy"
+                  width={280}
+                  height={64}
+                  className="h-14 w-auto transition-all duration-300 group-hover:brightness-110"
+                  priority
+                />
+              </motion.div>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <NavigationMenu className="hidden md:flex">
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-transparent hover:bg-primary/5 data-[state=open]:bg-primary/5">
+                  Outils gratuits
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="w-[300px] p-2">
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href="/tools/landing-page-analyzer"
+                          className="flex-row items-center gap-3 rounded-lg p-3"
+                        >
+                          <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10 shrink-0">
+                            <Search className="w-3.5 h-3.5 text-primary" />
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium">Analyse de landing page</span>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              Évaluez votre copywriting avec l&apos;IA
+                            </p>
+                          </div>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+          </div>
 
           {/* Right Side with enhanced spacing */}
           <div className="flex items-center gap-4">

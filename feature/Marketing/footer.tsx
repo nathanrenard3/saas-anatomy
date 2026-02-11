@@ -125,7 +125,7 @@ export function Footer({ latestPosts = [] }: FooterProps) {
   return (
     <footer className="relative border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] gap-8 lg:gap-12">
           {/* Brand Section */}
           <div className="space-y-4">
             <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
@@ -144,7 +144,7 @@ export function Footer({ latestPosts = [] }: FooterProps) {
 
           {/* Latest Articles */}
           {latestPosts.length > 0 && (
-            <div>
+            <div className="lg:justify-self-end">
               <h4 className="font-semibold text-foreground mb-4">Derniers articles</h4>
               <ul className="space-y-3">
                 {footerLinks.articles.map((article) => (
@@ -161,8 +161,23 @@ export function Footer({ latestPosts = [] }: FooterProps) {
             </div>
           )}
 
+          {/* Tools */}
+          <div className="lg:justify-self-end">
+            <h4 className="font-semibold text-foreground mb-4">Outils gratuits</h4>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  href="/tools/landing-page-analyzer"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Analyse de landing page
+                </Link>
+              </li>
+            </ul>
+          </div>
+
           {/* Legal Links */}
-          <div>
+          <div className="lg:justify-self-end">
             <h4 className="font-semibold text-foreground mb-4">Légal</h4>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
@@ -179,7 +194,7 @@ export function Footer({ latestPosts = [] }: FooterProps) {
           </div>
 
           {/* Social Media Links */}
-          <div>
+          <div className="lg:justify-self-end">
             <h4 className="font-semibold text-foreground mb-4">Suivez-nous</h4>
             <div className="flex gap-4">
               {footerLinks.social.map((social) => (

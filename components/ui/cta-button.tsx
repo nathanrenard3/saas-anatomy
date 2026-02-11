@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const ctaButtonVariants = cva(
-  "relative inline-flex items-center justify-center overflow-hidden transition-all duration-200 font-medium whitespace-nowrap disabled:pointer-events-none disabled:opacity-50",
+  "relative inline-flex items-center justify-center overflow-hidden transition-all duration-200 font-medium whitespace-nowrap cursor-pointer disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
