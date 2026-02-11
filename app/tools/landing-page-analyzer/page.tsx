@@ -7,39 +7,39 @@ import { AnalyzerFAQ } from "@/feature/tools/analyzer/analyzer-faq";
 const siteUrl = "https://saas-anatomy.com";
 
 export const metadata: Metadata = {
-  title: "Analyseur de Landing Page Gratuit | SaaS Anatomy",
+  title: "Audit Copywriting Gratuit | SaaS Anatomy",
   description:
-    "Analysez votre landing page SaaS gratuitement. Obtenez un score détaillé sur 10 critères clés : clarté, proposition de valeur, CTA, preuve sociale et plus.",
+    "Audite le copywriting de ta landing page gratuitement. Score détaillé sur 10 critères : clarté, proposition de valeur, CTA, preuve sociale et plus.",
   keywords: [
-    "analyseur landing page",
-    "analyse landing page gratuit",
-    "optimiser landing page SaaS",
+    "audit copywriting",
+    "analyse copywriting landing page",
+    "copywriting SaaS",
+    "optimiser landing page",
     "audit page de vente",
     "taux de conversion",
-    "landing page SaaS",
   ],
   openGraph: {
     type: "website",
     locale: "fr_FR",
     url: `${siteUrl}/tools/landing-page-analyzer`,
     siteName: "SaaS Anatomy",
-    title: "Analyseur de Landing Page Gratuit | SaaS Anatomy",
+    title: "Audit Copywriting Gratuit | SaaS Anatomy",
     description:
-      "Analysez votre landing page SaaS gratuitement. Score détaillé sur 10 critères, recommandations concrètes.",
+      "Audite le copywriting de ta page en 30 secondes. 10 critères analysés par IA avec recommandations concrètes.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "SaaS Anatomy - Analyseur de Landing Page",
+        alt: "SaaS Anatomy - Audit Copywriting",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Analyseur de Landing Page Gratuit | SaaS Anatomy",
+    title: "Audit Copywriting Gratuit | SaaS Anatomy",
     description:
-      "Analysez votre landing page SaaS gratuitement. 10 critères analysés par IA.",
+      "Audite le copywriting de ta page en 30 secondes. 10 critères analysés par IA.",
     images: ["/og-image.png"],
   },
   alternates: {
@@ -51,7 +51,7 @@ export default function AnalyzerPage() {
   const toolSchema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "Analyseur de Landing Page SaaS",
+    name: "Audit Copywriting SaaS",
     url: `${siteUrl}/tools/landing-page-analyzer`,
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
@@ -61,7 +61,7 @@ export default function AnalyzerPage() {
       priceCurrency: "EUR",
     },
     description:
-      "Outil gratuit d'analyse de landing page pour fondateurs SaaS. Score sur 10 critères avec recommandations actionables.",
+      "Outil gratuit d'audit copywriting pour fondateurs SaaS. Score sur 10 critères avec recommandations actionables.",
     inLanguage: "fr-FR",
     author: {
       "@type": "Organization",
