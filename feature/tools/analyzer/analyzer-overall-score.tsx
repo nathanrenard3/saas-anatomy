@@ -7,14 +7,14 @@ interface AnalyzerOverallScoreProps {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return "text-green-500";
+  if (score >= 70) return "text-green-500";
   if (score >= 60) return "text-yellow-500";
   if (score >= 40) return "text-orange-500";
   return "text-red-500";
 }
 
 function getStrokeColor(score: number): string {
-  if (score >= 80) return "#22c55e";
+  if (score >= 70) return "#22c55e";
   if (score >= 60) return "#eab308";
   if (score >= 40) return "#f97316";
   return "#ef4444";

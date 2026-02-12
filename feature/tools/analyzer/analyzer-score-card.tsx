@@ -147,7 +147,7 @@ export function AnalyzerScoreCard({
             {criterion.rewrite_suggestions!.map((suggestion, i) => (
               <div
                 key={i}
-                className="space-y-3 p-4 rounded-xl bg-card border border-border/80 shadow-sm"
+                className="space-y-3 p-4 rounded-xl bg-card border border-border/80"
               >
                 {/* Before */}
                 <div className="rounded-lg bg-muted/50 border border-border p-3.5">
