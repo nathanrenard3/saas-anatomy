@@ -6,6 +6,7 @@ import { ThumbsUp, ThumbsDown, ExternalLink } from "lucide-react";
 import { AnalyzerOverallScore } from "./analyzer-overall-score";
 import { AnalyzerScoreCard } from "./analyzer-score-card";
 import { AnalyzerNewsletterGate } from "./analyzer-newsletter-gate";
+import { ShareButton } from "./share-button";
 import type { AnalysisResult } from "@/lib/analyzer/types";
 
 const FREE_CRITERIA_COUNT = 4;
@@ -14,12 +15,14 @@ interface AnalyzerResultsProps {
   result: AnalysisResult;
   isUnlocked: boolean;
   onUnlock: () => void;
+  hideShare?: boolean;
 }
 
 export function AnalyzerResults({
   result,
   isUnlocked,
   onUnlock,
+  hideShare,
 }: AnalyzerResultsProps) {
   const freeCriteria = result.criteres.slice(0, FREE_CRITERIA_COUNT);
   const gatedCriteria = result.criteres.slice(FREE_CRITERIA_COUNT);
@@ -84,6 +87,18 @@ export function AnalyzerResults({
             </div>
           </div>
         </BlurFade>
+
+        {/* Share link */}
+        {!hideShare && (
+          <BlurFade delay={0.15} inView>
+            <div className="flex justify-center">
+              <ShareButton
+                path={`/tools/landing-page-analyzer/report/${result.id}`}
+                twitterText={`Mon site ${result.domain} a obtenu un score de ${result.score_global}/100 en audit copywriting !`}
+              />
+            </div>
+          </BlurFade>
+        )}
 
         {/* Free criteria */}
         <div className="space-y-4">
