@@ -5,6 +5,7 @@ import { generateOrganizationSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/json-ld";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { WebVitals } from "@/components/web-vitals";
+import { CrispChat } from "@/components/crisp-chat";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -75,6 +76,7 @@ export default function RootLayout({
       >
         <GoogleAnalytics />
         <WebVitals />
+        <CrispChat />
         <JsonLd data={organizationSchema} />
         {children}
       </body>
