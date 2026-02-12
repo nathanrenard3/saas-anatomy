@@ -16,6 +16,7 @@ export function AnalyzerNewsletterGate({
   onUnlock,
 }: AnalyzerNewsletterGateProps) {
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -30,7 +31,7 @@ export function AnalyzerNewsletterGate({
       const response = await fetch("/api/tools/analyze/unlock", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, analysisId }),
+        body: JSON.stringify({ email, analysisId, website }),
       });
 
       const data = await response.json();
@@ -120,6 +121,17 @@ export function AnalyzerNewsletterGate({
           {/* Email form */}
           <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-3">
             <div className="flex gap-3">
+              {/* Honeypot field — invisible to humans, bots fill it */}
+              <input
+                type="text"
+                name="website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute opacity-0 pointer-events-none"
+              />
               <Input
                 type="email"
                 placeholder="ton@email.com"

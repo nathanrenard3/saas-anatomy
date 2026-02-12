@@ -1,14 +1,24 @@
 import { NextResponse } from 'next/server';
 import * as brevo from '@getbrevo/brevo';
+import { validateEmail, isHoneypotFilled } from '@/lib/email-validation';
 
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
+    const { email, website } = await request.json();
+
+    // Honeypot check — silently succeed to not alert bots
+    if (isHoneypotFilled(website)) {
+      return NextResponse.json(
+        { message: 'Inscription réussie !' },
+        { status: 200 }
+      );
+    }
 
     // Validate email
-    if (!email || !email.includes('@')) {
+    const validation = validateEmail(email);
+    if (!validation.valid) {
       return NextResponse.json(
-        { error: 'Email invalide' },
+        { error: validation.error },
         { status: 400 }
       );
     }
@@ -31,7 +41,7 @@ export async function POST(request: Request) {
 
     // Create contact
     const createContact = new brevo.CreateContact();
-    createContact.email = email;
+    createContact.email = validation.email!;
     createContact.listIds = [3]; // Brevo contact list ID
     createContact.updateEnabled = true; // Update if contact already exists
 
