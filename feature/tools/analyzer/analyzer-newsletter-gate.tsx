@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CTAButton } from "@/components/ui/cta-button";
 import { Input } from "@/components/ui/input";
-import { Lock, ArrowRight, Mail } from "lucide-react";
+import { Lock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 interface AnalyzerNewsletterGateProps {
@@ -107,13 +107,13 @@ export function AnalyzerNewsletterGate({
           <div className="space-y-2">
             <h3 className="text-2xl md:text-3xl font-bold tracking-tight">
               Débloquez l&apos;analyse{" "}
-              <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
                 complète
               </span>
             </h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Accédez aux 6 critères restants et recevez nos meilleurs
-              conseils pour lancer un SaaS rentable.
+              Accédez aux 6 critères restants et à des suggestions de
+              réécriture personnalisées pour améliorer votre page.
             </p>
           </div>
 

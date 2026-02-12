@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { buildAnalysisPrompt } from "./prompt";
-import type { ScrapedContent } from "./types";
+import { buildRewritePrompt } from "./rewrite-prompt";
+import type { ScrapedContent, CriterionResult, RewriteSuggestion } from "./types";
 
 let _openai: OpenAI | null = null;
 
@@ -59,6 +60,47 @@ export async function analyzeContent(
 
   if (typeof parsed.score_global !== "number" || parsed.score_global < 0 || parsed.score_global > 100) {
     throw new Error("openai:invalid-score");
+  }
+
+  return parsed;
+}
+
+export interface RewriteResult {
+  suggestions: Array<{
+    criterion_id: string;
+    rewrites: RewriteSuggestion[];
+  }>;
+}
+
+export async function generateRewrites(
+  weakCriteria: CriterionResult[],
+  scraped: ScrapedContent,
+  url: string
+): Promise<RewriteResult> {
+  const { systemPrompt, userMessage } = buildRewritePrompt(
+    weakCriteria,
+    scraped,
+    url
+  );
+
+  const response = await getOpenAI().chat.completions.create({
+    model: "gpt-4o",
+    response_format: { type: "json_object" },
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userMessage },
+    ],
+    temperature: 0.5,
+    max_tokens: 3000,
+  });
+
+  const content = response.choices[0].message.content;
+  if (!content) throw new Error("openai:empty-rewrite-response");
+
+  const parsed = JSON.parse(content) as RewriteResult;
+
+  if (!parsed.suggestions || !Array.isArray(parsed.suggestions)) {
+    throw new Error("openai:invalid-rewrite-structure");
   }
 
   return parsed;

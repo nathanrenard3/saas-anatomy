@@ -1,13 +1,14 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { Badge } from "@/components/ui/badge";
-import { ThumbsUp, ThumbsDown, ExternalLink } from "lucide-react";
+import { ThumbsUp, ThumbsDown, ExternalLink, RefreshCw, AlertCircle } from "lucide-react";
 import { AnalyzerOverallScore } from "./analyzer-overall-score";
 import { AnalyzerScoreCard } from "./analyzer-score-card";
 import { AnalyzerNewsletterGate } from "./analyzer-newsletter-gate";
 import { ShareButton } from "./share-button";
-import type { AnalysisResult } from "@/lib/analyzer/types";
+import type { AnalysisResult, CriterionResult, RewriteSuggestion } from "@/lib/analyzer/types";
 
 const FREE_CRITERIA_COUNT = 4;
 
@@ -24,8 +25,75 @@ export function AnalyzerResults({
   onUnlock,
   hideShare,
 }: AnalyzerResultsProps) {
-  const freeCriteria = result.criteres.slice(0, FREE_CRITERIA_COUNT);
-  const gatedCriteria = result.criteres.slice(FREE_CRITERIA_COUNT);
+  const [rewritesLoading, setRewritesLoading] = useState(false);
+  const [rewritesLoaded, setRewritesLoaded] = useState(false);
+  const [rewritesError, setRewritesError] = useState(false);
+  const [criteriaWithRewrites, setCriteriaWithRewrites] = useState<CriterionResult[]>(result.criteres);
+
+  const fetchRewrites = useCallback(async () => {
+    setRewritesLoading(true);
+    setRewritesError(false);
+    try {
+      const res = await fetch("/api/tools/analyze/rewrite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ analysisId: result.id }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Rewrite API error:", res.status, errorData);
+        setRewritesError(true);
+        return;
+      }
+
+      const data = await res.json();
+
+      if (!data.suggestions || data.suggestions.length === 0) {
+        // No weak criteria — nothing to rewrite
+        return;
+      }
+
+      const merged = result.criteres.map((criterion) => {
+        const match = data.suggestions.find(
+          (s: { criterion_id: string; rewrites: RewriteSuggestion[] }) =>
+            s.criterion_id === criterion.id || s.criterion_id === criterion.nom
+        );
+        if (match) {
+          return { ...criterion, rewrite_suggestions: match.rewrites };
+        }
+        return criterion;
+      });
+      setCriteriaWithRewrites(merged);
+    } catch (err) {
+      console.error("Failed to load rewrites:", err);
+      setRewritesError(true);
+    } finally {
+      setRewritesLoading(false);
+      setRewritesLoaded(true);
+    }
+  }, [result.id, result.criteres]);
+
+  const retryRewrites = useCallback(() => {
+    setRewritesLoaded(false);
+    setRewritesError(false);
+    fetchRewrites();
+  }, [fetchRewrites]);
+
+  useEffect(() => {
+    if (isUnlocked && !rewritesLoaded && !rewritesLoading) {
+      fetchRewrites();
+    }
+  }, [isUnlocked, rewritesLoaded, rewritesLoading, fetchRewrites]);
+
+  // Free criteria: strip rewrites only if not unlocked
+  const freeCriteria = isUnlocked
+    ? criteriaWithRewrites.slice(0, FREE_CRITERIA_COUNT)
+    : criteriaWithRewrites
+        .slice(0, FREE_CRITERIA_COUNT)
+        .map((c) => ({ ...c, rewrite_suggestions: undefined }));
+
+  const gatedCriteria = criteriaWithRewrites.slice(FREE_CRITERIA_COUNT);
 
   return (
     <section className="px-4 py-12">
@@ -113,7 +181,11 @@ export function AnalyzerResults({
 
           {freeCriteria.map((criterion, index) => (
             <BlurFade key={criterion.id} delay={0.3 + index * 0.1} inView>
-              <AnalyzerScoreCard criterion={criterion} index={index} />
+              <AnalyzerScoreCard
+                criterion={criterion}
+                index={index}
+                rewritesLoading={isUnlocked ? rewritesLoading : undefined}
+              />
             </BlurFade>
           ))}
         </div>
@@ -124,6 +196,25 @@ export function AnalyzerResults({
             analysisId={result.id}
             onUnlock={onUnlock}
           />
+        )}
+
+        {/* Rewrite error banner */}
+        {rewritesError && isUnlocked && (
+          <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-orange-500/20 bg-orange-500/5">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-orange-500 shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                Les suggestions de réécriture n&apos;ont pas pu être générées.
+              </p>
+            </div>
+            <button
+              onClick={retryRewrites}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-card hover:bg-muted transition-colors shrink-0"
+            >
+              <RefreshCw className="w-3 h-3" />
+              Réessayer
+            </button>
+          </div>
         )}
 
         <div className="relative space-y-4">
@@ -145,6 +236,7 @@ export function AnalyzerResults({
                 <AnalyzerScoreCard
                   criterion={criterion}
                   index={globalIndex}
+                  rewritesLoading={rewritesLoading}
                 />
               </BlurFade>
             ) : (

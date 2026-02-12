@@ -30,7 +30,9 @@ export async function getAnalysisById(id: string) {
       id: analyses.id,
       url: analyses.url,
       domain: analyses.domain,
+      scrapedContent: analyses.scrapedContent,
       analysisResult: analyses.analysisResult,
+      rewriteSuggestions: analyses.rewriteSuggestions,
       overallScore: analyses.overallScore,
       createdAt: analyses.createdAt,
     })
@@ -39,4 +41,12 @@ export async function getAnalysisById(id: string) {
     .limit(1);
 
   return result.length > 0 ? result[0] : null;
+}
+
+export async function storeRewrites(analysisId: string, suggestions: unknown) {
+  const db = getDb();
+  await db
+    .update(analyses)
+    .set({ rewriteSuggestions: suggestions })
+    .where(eq(analyses.id, analysisId));
 }

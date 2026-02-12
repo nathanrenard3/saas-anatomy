@@ -1,0 +1,1 @@
+ALTER TABLE "analyses" ADD COLUMN "rewrite_suggestions" jsonb;

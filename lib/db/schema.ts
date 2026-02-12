@@ -24,6 +24,7 @@ export const analyses = pgTable(
     analysisResult: jsonb("analysis_result").notNull(),
     overallScore: integer("overall_score").notNull(),
     leadId: uuid("lead_id").references(() => leads.id),
+    rewriteSuggestions: jsonb("rewrite_suggestions"),
     ipAddress: text("ip_address"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },

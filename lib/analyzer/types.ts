@@ -15,6 +15,19 @@ export interface ScrapedContent {
   linkTexts: string[];
 }
 
+export interface RewriteSuggestion {
+  element_type:
+    | "heading"
+    | "cta"
+    | "value_proposition"
+    | "section"
+    | "meta_description"
+    | "subheading";
+  before: string;
+  after: string;
+  justification: string;
+}
+
 export interface CriterionResult {
   id: string;
   nom: string;
@@ -23,6 +36,7 @@ export interface CriterionResult {
   explication: string;
   recommandation: string;
   elements_trouves: string[];
+  rewrite_suggestions?: RewriteSuggestion[];
 }
 
 export interface AnalysisResult {
