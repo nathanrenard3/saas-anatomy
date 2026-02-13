@@ -4,15 +4,6 @@ import { useState } from "react";
 import { Lightbulb, Wand2, Copy, Check, Loader2, ArrowDown } from "lucide-react";
 import type { CriterionResult } from "@/lib/analyzer/types";
 
-const ELEMENT_TYPE_LABELS: Record<string, string> = {
-  heading: "Titre principal",
-  subheading: "Sous-titre",
-  cta: "Bouton d'action",
-  value_proposition: "Proposition de valeur",
-  section: "Section de contenu",
-  meta_description: "Meta description",
-};
-
 interface AnalyzerScoreCardProps {
   criterion: CriterionResult;
   index: number;
