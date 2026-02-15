@@ -86,6 +86,9 @@ importers:
       openai:
         specifier: ^6.21.0
         version: 6.21.0(ws@8.19.0)(zod@4.3.6)
+      playwright-core:
+        specifier: ^1.58.2
+        version: 1.58.2
       radix-ui:
         specifier: ^1.4.3
         version: 1.4.3(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -7015,6 +7018,11 @@ packages:
 
   player.style@0.3.1:
     resolution: {integrity: sha512-z/T8hJGaTkHT9vdXgWdOgF37eB1FV7/j52VXQZ2lgEhpru9oT8TaUWIxp6GoxTnhPBM4X6nSbpkAHrT7UTjUKg==}
+
+  playwright-core@1.58.2:
+    resolution: {integrity: sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   pluralize-esm@9.0.5:
     resolution: {integrity: sha512-Kb2dcpMsIutFw2hYrN0EhsAXOUJTd6FVMIxvNAkZCMQLVt9NGZqQczvGpYDxNWCZeCWLHUPxQIBudWzt1h7VVA==}
@@ -16149,6 +16157,8 @@ snapshots:
       media-chrome: 4.16.1(react@19.2.3)
     transitivePeerDependencies:
       - react
+
+  playwright-core@1.58.2: {}
 
   pluralize-esm@9.0.5: {}
 
