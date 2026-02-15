@@ -1,29 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Globe, FileText, Brain, BarChart3, FileCheck } from "lucide-react";
 
-const STEPS = [
-  { label: "Connexion à la page...", icon: Globe, duration: 3000 },
-  { label: "Lecture du contenu...", icon: FileText, duration: 3000 },
-  { label: "Analyse du copywriting...", icon: Brain, duration: 6000 },
-  { label: "Évaluation des critères...", icon: BarChart3, duration: 6000 },
-  { label: "Préparation du rapport...", icon: FileCheck, duration: 7000 },
+const STEP_CONFIGS = [
+  { labelKey: "loadingStep1" as const, icon: Globe, duration: 3000 },
+  { labelKey: "loadingStep2" as const, icon: FileText, duration: 3000 },
+  { labelKey: "loadingStep3" as const, icon: Brain, duration: 6000 },
+  { labelKey: "loadingStep4" as const, icon: BarChart3, duration: 6000 },
+  { labelKey: "loadingStep5" as const, icon: FileCheck, duration: 7000 },
 ];
 
 export function AnalyzerLoading() {
+  const t = useTranslations("analyzer");
   const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
 
     const advanceStep = (step: number) => {
-      if (step < STEPS.length - 1) {
+      if (step < STEP_CONFIGS.length - 1) {
         timeout = setTimeout(() => {
           setCurrentStep(step + 1);
           advanceStep(step + 1);
-        }, STEPS[step].duration);
+        }, STEP_CONFIGS[step].duration);
       }
     };
 
@@ -37,14 +39,14 @@ export function AnalyzerLoading() {
         <div className="space-y-6">
           {/* Progress steps */}
           <div className="space-y-3">
-            {STEPS.map((step, index) => {
+            {STEP_CONFIGS.map((step, index) => {
               const Icon = step.icon;
               const isActive = index === currentStep;
               const isDone = index < currentStep;
 
               return (
                 <motion.div
-                  key={step.label}
+                  key={step.labelKey}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{
                     opacity: isDone || isActive ? 1 : 0.3,
@@ -87,7 +89,7 @@ export function AnalyzerLoading() {
                           : "text-muted-foreground/50"
                     }`}
                   >
-                    {step.label}
+                    {t(step.labelKey)}
                   </span>
                 </motion.div>
               );

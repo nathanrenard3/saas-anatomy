@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { CTAButtonLink } from "@/components/ui/cta-button";
 import { ArrowRight, Search } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
@@ -9,6 +10,8 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ postsCount }: HeroSectionProps) {
+  const t = useTranslations("hero");
+
   return (
     <section className="relative px-4 py-24 md:py-32 overflow-hidden">
       {/* Grid Background with 13 columns - Vertical gradient stripes (5 columns on mobile, 13 on desktop) */}
@@ -72,27 +75,29 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
               <div className="relative flex h-6 w-6 items-center justify-center rounded-full bg-primary/20 ring-2 ring-primary/30 ring-offset-1 ring-offset-background/50">
                 <Search className="h-3.5 w-3.5 text-primary" />
               </div>
-              <span className="relative text-sm font-medium text-foreground">Le guide pour passer du side project aux vrais revenus</span>
+              <span className="relative text-sm font-medium text-foreground">{t("badge")}</span>
             </div>
           </BlurFade>
 
           <BlurFade delay={0.2} inView>
             <h1 className="relative text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tighter leading-[1.1] max-w-4xl">
-              Analyse les SaaS qui{" "}
-              <span className="relative inline-block">
-                <span className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                  rapportent vraiment de l&apos;argent
-                </span>
-                {/* Very subtle glow effect behind text */}
-                <span className="absolute inset-0 bg-linear-to-r from-primary/8 via-primary/12 to-primary/8 blur-2xl -z-10" aria-hidden="true" />
-              </span>
+              {t.rich("title", {
+                highlight: (chunks) => (
+                  <span className="relative inline-block">
+                    <span className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                      {chunks}
+                    </span>
+                    {/* Very subtle glow effect behind text */}
+                    <span className="absolute inset-0 bg-linear-to-r from-primary/8 via-primary/12 to-primary/8 blur-2xl -z-10" aria-hidden="true" />
+                  </span>
+                ),
+              })}
             </h1>
           </BlurFade>
 
           <BlurFade delay={0.3} inView>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl text-balance">
-              Découvre les secrets des business qui cartonnent pour comprendre comment ils génèrent du revenu et
-              comment toi aussi tu peux le faire.
+              {t("description")}
             </p>
           </BlurFade>
 
@@ -103,7 +108,7 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
               className="text-base px-8"
               rightIcon={<ArrowRight className="w-5 h-5" />}
             >
-              Entrer dans les coulisses
+              {t("cta")}
             </CTAButtonLink>
           </BlurFade>
 
@@ -117,7 +122,7 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
                 <div className="text-3xl font-bold bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                   {postsCount}+
                 </div>
-                <div className="text-sm text-muted-foreground mt-1">SaaS analysés</div>
+                <div className="text-sm text-muted-foreground mt-1">{t("statsSaasAnalyzed")}</div>
                 <div className="absolute inset-0 -z-10 bg-primary/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
 
@@ -125,7 +130,7 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
                 <div className="text-3xl font-bold bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                   100%
                 </div>
-                <div className="text-sm text-muted-foreground mt-1">Transparence</div>
+                <div className="text-sm text-muted-foreground mt-1">{t("statsTransparency")}</div>
                 <div className="absolute inset-0 -z-10 bg-primary/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
 
@@ -133,7 +138,7 @@ export function HeroSection({ postsCount }: HeroSectionProps) {
                 <div className="text-3xl font-bold bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                   0€
                 </div>
-                <div className="text-sm text-muted-foreground mt-1">Accès gratuit</div>
+                <div className="text-sm text-muted-foreground mt-1">{t("statsFreeAccess")}</div>
                 <div className="absolute inset-0 -z-10 bg-primary/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             </div>

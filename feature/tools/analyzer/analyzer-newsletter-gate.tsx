@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { CTAButton } from "@/components/ui/cta-button";
 import { Input } from "@/components/ui/input";
 import { Lock, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 
 interface AnalyzerNewsletterGateProps {
   analysisId: string;
@@ -15,6 +16,8 @@ export function AnalyzerNewsletterGate({
   analysisId,
   onUnlock,
 }: AnalyzerNewsletterGateProps) {
+  const t = useTranslations("analyzer");
+  const tErrors = useTranslations("errors");
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -37,14 +40,14 @@ export function AnalyzerNewsletterGate({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de l'inscription");
+        const errorCode = data.error || "genericError";
+        setError(tErrors.has(errorCode) ? tErrors(errorCode as any) : tErrors("genericError"));
+        return;
       }
 
       onUnlock();
-    } catch (err: unknown) {
-      setError(
-        err instanceof Error ? err.message : "Une erreur est survenue."
-      );
+    } catch {
+      setError(tErrors("genericError"));
     } finally {
       setIsLoading(false);
     }
@@ -107,14 +110,16 @@ export function AnalyzerNewsletterGate({
 
           <div className="space-y-2">
             <h3 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Débloquez l&apos;analyse{" "}
-              <span className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                complète
-              </span>
+              {t.rich("unlockTitle", {
+                highlight: (chunks) => (
+                  <span className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                    {chunks}
+                  </span>
+                ),
+              })}
             </h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Accédez aux 6 critères restants et à des suggestions de
-              réécriture personnalisées pour améliorer votre page.
+              {t("unlockDescription")}
             </p>
           </div>
 
@@ -148,7 +153,7 @@ export function AnalyzerNewsletterGate({
                 className="h-11 px-5"
                 rightIcon={<ArrowRight className="w-4 h-4" />}
               >
-                {isLoading ? "..." : "Voir tout"}
+                {isLoading ? "..." : t("seeAll")}
               </CTAButton>
             </div>
 
@@ -159,13 +164,13 @@ export function AnalyzerNewsletterGate({
             )}
 
             <p className="text-xs text-muted-foreground">
-              Pas de spam. Désinscription en un clic.
+              {t("noSpam")}
             </p>
           </form>
 
           {/* Social links */}
           <div className="flex items-center justify-center gap-4 pt-2">
-            <span className="text-xs text-muted-foreground">Suivez-nous</span>
+            <span className="text-xs text-muted-foreground">{t("followUs")}</span>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
                 <Link

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { DollarSign, Users, Wrench, RefreshCcw, Search, Megaphone, PenLine } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
@@ -289,6 +290,7 @@ const UserAcquisitionAnimation = () => {
 
 // Animated Growth Component - Version Premium
 const GrowthAnimation = () => {
+  const t = useTranslations("whatYouLearn");
   const channels = [
     { name: "SEO", value: 75, icon: "🔍", color: "from-blue-400 to-blue-600", delay: 0 },
     { name: "Content", value: 85, icon: "✍️", color: "from-cyan-400 to-cyan-600", delay: 0.3 },
@@ -381,7 +383,7 @@ const GrowthAnimation = () => {
             className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 backdrop-blur-sm"
           >
             <span className="text-xs font-semibold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              +2.5k visiteurs/mois
+              {t("visitorsPerMonth")}
             </span>
           </motion.div>
         </motion.div>
@@ -419,11 +421,12 @@ const ToolsAnimation = () => {
 
 // Animated Reuse Component - Simple List
 const ReuseAnimation = () => {
+  const t = useTranslations("whatYouLearn");
   const items = [
-    { text: "Stratégies pricing", delay: 0 },
-    { text: "Templates landing page", delay: 0.15 },
-    { text: "Frameworks SEO", delay: 0.3 },
-    { text: "Tactiques growth", delay: 0.45 },
+    { text: t("reuseItem1"), delay: 0 },
+    { text: t("reuseItem2"), delay: 0.15 },
+    { text: t("reuseItem3"), delay: 0.3 },
+    { text: t("reuseItem4"), delay: 0.45 },
   ];
 
   return (
@@ -446,46 +449,48 @@ const ReuseAnimation = () => {
   );
 };
 
-const features = [
-  {
-    Icon: DollarSign,
-    name: "Comment ces SaaS gagnent de l'argent",
-    description: "Modèles économiques, pricing, upsells.",
-    href: "/blog",
-    cta: "Voir les analyses",
-    className: "col-span-3 lg:col-span-2",
-    background: <RevenueAnimation />,
-  },
-  {
-    Icon: Users,
-    name: "Comment ils trouvent leurs utilisateurs",
-    description: "SEO, contenu, pub, affiliations, etc.",
-    href: "/blog",
-    cta: "Voir les analyses",
-    className: "col-span-3 lg:col-span-1",
-    background: <UserAcquisitionAnimation />,
-  },
-  {
-    Icon: Wrench,
-    name: "Les outils qu'ils utilisent",
-    description: "Stack no-code, marketing, automatisation, support.",
-    href: "/blog",
-    cta: "Voir les analyses",
-    className: "col-span-3 lg:col-span-1",
-    background: <ToolsAnimation />,
-  },
-  {
-    Icon: RefreshCcw,
-    name: "Ce que tu peux réutiliser pour ton business",
-    description: "Stratégies concrètes applicables même en solo.",
-    href: "/blog",
-    cta: "Voir les analyses",
-    className: "col-span-3 lg:col-span-2",
-    background: <ReuseAnimation />,
-  },
-];
-
 export function WhatYouLearnSection() {
+  const t = useTranslations("whatYouLearn");
+
+  const features = [
+    {
+      Icon: DollarSign,
+      name: t("feature1Name"),
+      description: t("feature1Description"),
+      href: "/blog",
+      cta: t("seeAnalyses"),
+      className: "col-span-3 lg:col-span-2",
+      background: <RevenueAnimation />,
+    },
+    {
+      Icon: Users,
+      name: t("feature2Name"),
+      description: t("feature2Description"),
+      href: "/blog",
+      cta: t("seeAnalyses"),
+      className: "col-span-3 lg:col-span-1",
+      background: <UserAcquisitionAnimation />,
+    },
+    {
+      Icon: Wrench,
+      name: t("feature3Name"),
+      description: t("feature3Description"),
+      href: "/blog",
+      cta: t("seeAnalyses"),
+      className: "col-span-3 lg:col-span-1",
+      background: <ToolsAnimation />,
+    },
+    {
+      Icon: RefreshCcw,
+      name: t("feature4Name"),
+      description: t("feature4Description"),
+      href: "/blog",
+      cta: t("seeAnalyses"),
+      className: "col-span-3 lg:col-span-2",
+      background: <ReuseAnimation />,
+    },
+  ];
+
   return (
     <section className="relative px-4 py-24 bg-muted/30">
       <div className="container mx-auto max-w-6xl">
@@ -493,11 +498,13 @@ export function WhatYouLearnSection() {
         <BlurFade delay={0.1} inView>
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight">
-              Ce que tu vas{" "}
-              <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                vraiment apprendre
-              </span>{" "}
-              ici
+              {t.rich("sectionTitle", {
+                highlight: (chunks) => (
+                  <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                    {chunks}
+                  </span>
+                ),
+              })}
             </h2>
           </div>
         </BlurFade>
@@ -515,9 +522,11 @@ export function WhatYouLearnSection() {
         <BlurFade delay={0.6} inView>
           <div className="mt-12 text-center">
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              👉 SaaS Anatomy est fait pour être{" "}
-              <span className="font-semibold text-foreground">utile</span>, pas juste
-              informatif.
+              👉 {t.rich("bottomMessage", {
+                bold: (chunks) => (
+                  <span className="font-semibold text-foreground">{chunks}</span>
+                ),
+              })}
             </p>
           </div>
         </BlurFade>

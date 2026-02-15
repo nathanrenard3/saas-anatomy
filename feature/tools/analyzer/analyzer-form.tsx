@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { CTAButton } from "@/components/ui/cta-button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Loader2 } from "lucide-react";
@@ -11,6 +12,7 @@ interface AnalyzerFormProps {
 }
 
 export function AnalyzerForm({ onSubmit, isLoading }: AnalyzerFormProps) {
+  const t = useTranslations("analyzer");
   const [url, setUrl] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -30,7 +32,7 @@ export function AnalyzerForm({ onSubmit, isLoading }: AnalyzerFormProps) {
       <div className="flex gap-3">
         <Input
           type="url"
-          placeholder="https://votre-saas.com"
+          placeholder={t("urlPlaceholder")}
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           required
@@ -50,11 +52,11 @@ export function AnalyzerForm({ onSubmit, isLoading }: AnalyzerFormProps) {
             )
           }
         >
-          {isLoading ? "Analyse..." : "Analyser"}
+          {isLoading ? t("analyzing") : t("analyzeButton")}
         </CTAButton>
       </div>
       <p className="text-xs text-center text-muted-foreground mt-3">
-        Gratuit. 3 analyses par jour. Résultats en moins de 30 secondes.
+        {t("formNote")}
       </p>
     </form>
   );

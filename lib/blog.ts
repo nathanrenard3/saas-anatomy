@@ -6,12 +6,6 @@ import type { PortableTextBlock } from '@portabletext/types'
 // Image URL builder for Sanity images
 const builder = imageUrlBuilder(client)
 
-/**
- * Génère une URL optimisée pour les images Sanity
- * @param source - Source de l'image Sanity
- * @param options - Options de transformation
- * @returns URL de l'image optimisée
- */
 export function urlForImage(
   source: any,
   options?: {
@@ -33,18 +27,15 @@ export function urlForImage(
   if (options?.quality) {
     imageBuilder = imageBuilder.quality(options.quality)
   } else {
-    // Qualité par défaut optimisée pour le web
     imageBuilder = imageBuilder.quality(85)
   }
 
   return imageBuilder
 }
 
-// Helper function to calculate reading time from PortableText
-function calculateReadingTime(content: PortableTextBlock[]): string {
-  if (!content || content.length === 0) return '1 min de lecture'
+function calculateReadingTime(content: PortableTextBlock[]): number {
+  if (!content || content.length === 0) return 1
 
-  // Extract text from PortableText blocks
   const text = content
     .filter((block: any) => block._type === 'block')
     .map((block: any) =>
@@ -52,11 +43,8 @@ function calculateReadingTime(content: PortableTextBlock[]): string {
     )
     .join(' ')
 
-  // Calculate reading time (average 200 words per minute in French)
   const words = text.trim().split(/\s+/).length
-  const minutes = Math.ceil(words / 200)
-
-  return minutes === 1 ? '1 min de lecture' : `${minutes} min de lecture`
+  return Math.max(1, Math.ceil(words / 200))
 }
 
 export type BlogPost = {
@@ -67,14 +55,16 @@ export type BlogPost = {
   content: PortableTextBlock[]
   author?: string
   tags?: string[]
-  readingTime: string
+  readingTime: number
   image?: string
   published?: boolean
+  language?: string
+  translationGroup?: string
 }
 
-export async function getAllPosts(): Promise<BlogPost[]> {
+export async function getAllPosts(locale: string = 'fr'): Promise<BlogPost[]> {
   const query = groq`
-    *[_type == "post" && published == true] | order(date desc) {
+    *[_type == "post" && published == true && (!defined(language) || language == $locale)] | order(date desc) {
       "slug": slug.current,
       title,
       date,
@@ -82,22 +72,23 @@ export async function getAllPosts(): Promise<BlogPost[]> {
       content,
       tags,
       "image": image.asset->url,
-      published
+      published,
+      language,
+      translationGroup
     }
   `
 
-  const posts = await client.fetch<BlogPost[]>(query)
+  const posts = await client.fetch<BlogPost[]>(query, { locale })
 
-  // Add reading time to each post
   return posts.map((post) => ({
     ...post,
     readingTime: calculateReadingTime(post.content),
   }))
 }
 
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+export async function getPostBySlug(slug: string, locale: string = 'fr'): Promise<BlogPost | null> {
   const query = groq`
-    *[_type == "post" && slug.current == $slug && published == true][0] {
+    *[_type == "post" && slug.current == $slug && published == true && (!defined(language) || language == $locale)][0] {
       "slug": slug.current,
       title,
       date,
@@ -105,11 +96,13 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       content,
       tags,
       "image": image.asset->url,
-      published
+      published,
+      language,
+      translationGroup
     }
   `
 
-  const post = await client.fetch<BlogPost | null>(query, { slug })
+  const post = await client.fetch<BlogPost | null>(query, { slug, locale })
 
   if (!post) return null
 
@@ -119,22 +112,21 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   }
 }
 
-export async function getAllTags(): Promise<string[]> {
+export async function getAllTags(locale: string = 'fr'): Promise<string[]> {
   const query = groq`
-    *[_type == "post" && published == true] {
+    *[_type == "post" && published == true && (!defined(language) || language == $locale)] {
       tags
     }.tags[] | order(@)
   `
 
-  const tags = await client.fetch<string[]>(query)
+  const tags = await client.fetch<string[]>(query, { locale })
 
-  // Remove duplicates
   return Array.from(new Set(tags)).sort()
 }
 
-export async function getFeaturedPosts(slugs: readonly string[]): Promise<BlogPost[]> {
+export async function getFeaturedPosts(slugs: readonly string[], locale: string = "fr"): Promise<BlogPost[]> {
   const query = groq`
-    *[_type == "post" && slug.current in $slugs && published == true] {
+    *[_type == "post" && slug.current in $slugs && published == true && (!defined(language) || language == $locale)] {
       "slug": slug.current,
       title,
       date,
@@ -142,20 +134,29 @@ export async function getFeaturedPosts(slugs: readonly string[]): Promise<BlogPo
       content,
       tags,
       "image": image.asset->url,
-      published
+      published,
+      language,
+      translationGroup
     }
   `
 
-  const posts = await client.fetch<BlogPost[]>(query, { slugs })
+  const posts = await client.fetch<BlogPost[]>(query, { slugs, locale })
 
-  // Add reading time and preserve order from slugs array
   const postsWithReadingTime = posts.map((post) => ({
     ...post,
     readingTime: calculateReadingTime(post.content),
   }))
 
-  // Sort by original slugs order
   return slugs
     .map((slug) => postsWithReadingTime.find((p) => p.slug === slug))
     .filter((post): post is BlogPost => post !== undefined)
+}
+
+export async function getAlternatePost(translationGroup: string, targetLocale: string): Promise<{ slug: string } | null> {
+  const query = groq`
+    *[_type == "post" && translationGroup == $translationGroup && language == $targetLocale && published == true][0] {
+      "slug": slug.current
+    }
+  `
+  return client.fetch(query, { translationGroup, targetLocale })
 }

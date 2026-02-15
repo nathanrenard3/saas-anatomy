@@ -147,12 +147,38 @@ export default defineType({
       description: "L'article sera visible sur le site seulement s'il est publié",
       initialValue: false,
     }),
+    defineField({
+      name: 'language',
+      title: 'Langue',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Français', value: 'fr' },
+          { title: 'English', value: 'en' },
+        ],
+      },
+      validation: (Rule) => Rule.required(),
+      initialValue: 'fr',
+    }),
+    defineField({
+      name: 'translationGroup',
+      title: 'Groupe de traduction',
+      type: 'string',
+      description: 'Identifiant partagé entre les versions FR et EN du même article. Utiliser le slug FR comme convention.',
+    }),
   ],
   preview: {
     select: {
       title: 'title',
-      subtitle: 'excerpt',
+      subtitle: 'language',
       media: 'image',
+    },
+    prepare({ title, subtitle, media }) {
+      return {
+        title,
+        subtitle: subtitle === 'fr' ? 'FR' : subtitle === 'en' ? 'EN' : subtitle,
+        media,
+      };
     },
   },
   orderings: [

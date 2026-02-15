@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Lightbulb, Wand2, Copy, Check, Loader2, ArrowDown } from "lucide-react";
 import type { CriterionResult } from "@/lib/analyzer/types";
 
@@ -17,7 +18,7 @@ function getScoreBg(score: number): string {
   return "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20";
 }
 
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ text, copyLabel }: { text: string; copyLabel: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -30,7 +31,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       onClick={handleCopy}
       className="shrink-0 p-1 rounded hover:bg-muted transition-colors"
-      title="Copier"
+      title={copyLabel}
     >
       {copied ? (
         <Check className="w-3.5 h-3.5 text-green-500" />
@@ -47,6 +48,7 @@ export function AnalyzerScoreCard({
   isBlurred,
   rewritesLoading,
 }: AnalyzerScoreCardProps) {
+  const t = useTranslations("analyzer");
   const hasRewrites =
     criterion.rewrite_suggestions &&
     criterion.rewrite_suggestions.length > 0;
@@ -106,7 +108,7 @@ export function AnalyzerScoreCard({
         <div className="flex items-center gap-2 pt-3 border-t border-border">
           <Loader2 className="w-4 h-4 animate-spin text-primary" />
           <span className="text-sm text-muted-foreground">
-            Génération des suggestions de réécriture...
+            {t("generatingRewrites")}
           </span>
         </div>
       )}
@@ -125,10 +127,10 @@ export function AnalyzerScoreCard({
             </div>
             <div>
               <h4 className="text-sm font-semibold text-foreground tracking-tight">
-                Propositions d&apos;amélioration
+                {t("improvementSuggestions")}
               </h4>
               <p className="text-[11px] text-muted-foreground">
-                Suggestions de réécriture basées sur votre contenu actuel
+                {t("improvementSubtitle")}
               </p>
             </div>
           </div>
@@ -145,7 +147,7 @@ export function AnalyzerScoreCard({
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <div className="w-2 h-2 rounded-full bg-red-500/60" />
                     <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
-                      Actuellement
+                      {t("currently")}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed line-through decoration-red-400/50 decoration-2">
@@ -169,14 +171,14 @@ export function AnalyzerScoreCard({
                       <div className="flex items-center gap-1.5 mb-1.5">
                         <div className="w-2 h-2 rounded-full bg-green-500" />
                         <span className="text-[10px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400">
-                          Suggestion
+                          {t("suggestion")}
                         </span>
                       </div>
                       <p className="text-sm text-foreground font-medium leading-relaxed">
                         {suggestion.after}
                       </p>
                     </div>
-                    <CopyButton text={suggestion.after} />
+                    <CopyButton text={suggestion.after} copyLabel={t("copy")} />
                   </div>
                 </div>
 

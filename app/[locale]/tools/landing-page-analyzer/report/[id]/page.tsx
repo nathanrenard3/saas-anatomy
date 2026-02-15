@@ -1,6 +1,7 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
+import { getLocale, getTranslations } from "next-intl/server";
 import { getAnalysisById } from "@/lib/analyzer/storage";
 import { findLeadByEmail } from "@/lib/analyzer/lead";
 import { JsonLd } from "@/components/json-ld";
@@ -26,28 +27,37 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
+  const locale = await getLocale();
+  const t = await getTranslations("analyzer");
 
   if (!UUID_REGEX.test(id)) {
-    return { title: "Rapport introuvable" };
+    return { title: t("reportNotFound") };
   }
 
   const analysis = await getAnalysisById(id);
 
   if (!analysis) {
-    return { title: "Rapport introuvable" };
+    return { title: t("reportNotFound") };
   }
 
   const grade = scoreToGrade(analysis.overallScore);
-  const title = `${analysis.domain} - Score ${analysis.overallScore}/100 (${grade}) | Audit Copywriting`;
-  const description = `Résultat de l'audit copywriting de ${analysis.domain}. Score global : ${analysis.overallScore}/100. Découvre l'analyse détaillée sur 10 critères.`;
+  const title = t("reportMetaTitle", {
+    domain: analysis.domain,
+    score: analysis.overallScore,
+    grade,
+  });
+  const description = t("reportMetaDescription", {
+    domain: analysis.domain,
+    score: analysis.overallScore,
+  });
 
   return {
     title,
     description,
     openGraph: {
       type: "article",
-      locale: "fr_FR",
-      url: `${siteUrl}/tools/landing-page-analyzer/report/${id}`,
+      locale: locale === "fr" ? "fr_FR" : "en_US",
+      url: `${siteUrl}/${locale}/tools/landing-page-analyzer/report/${id}`,
       siteName: "SaaS Anatomy",
       title,
       description,
@@ -56,18 +66,22 @@ export async function generateMetadata({
           url: `${siteUrl}/tools/landing-page-analyzer/report/${id}/og`,
           width: 1200,
           height: 630,
-          alt: `Audit copywriting de ${analysis.domain}`,
+          alt: t("reportOgAlt", { domain: analysis.domain }),
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${analysis.domain} : ${analysis.overallScore}/100 (${grade})`,
+      title: t("reportTwitterTitle", {
+        domain: analysis.domain,
+        score: analysis.overallScore,
+        grade,
+      }),
       description,
       images: [`${siteUrl}/tools/landing-page-analyzer/report/${id}/og`],
     },
     alternates: {
-      canonical: `${siteUrl}/tools/landing-page-analyzer/report/${id}`,
+      canonical: `${siteUrl}/${locale}/tools/landing-page-analyzer/report/${id}`,
     },
     robots: {
       index: false,
@@ -82,6 +96,8 @@ interface ReportPageProps {
 
 export default async function ReportPage({ params }: ReportPageProps) {
   const { id } = await params;
+  const locale = await getLocale();
+  const t = await getTranslations("analyzer");
 
   if (!UUID_REGEX.test(id)) {
     notFound();
@@ -126,13 +142,13 @@ export default async function ReportPage({ params }: ReportPageProps) {
   const reportSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: `Audit copywriting de ${analysis.domain}`,
-    url: `${siteUrl}/tools/landing-page-analyzer/report/${id}`,
-    description: `Score global : ${analysis.overallScore}/100`,
+    name: t("reportSchemaName", { domain: analysis.domain }),
+    url: `${siteUrl}/${locale}/tools/landing-page-analyzer/report/${id}`,
+    description: t("reportSchemaScore", { score: analysis.overallScore }),
     isPartOf: {
       "@type": "WebApplication",
-      name: "Audit Copywriting SaaS",
-      url: `${siteUrl}/tools/landing-page-analyzer`,
+      name: t("toolSchemaName"),
+      url: `${siteUrl}/${locale}/tools/landing-page-analyzer`,
     },
   };
 

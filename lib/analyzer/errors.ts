@@ -5,30 +5,30 @@ export function mapScrapeError(error: unknown): NextResponse {
 
   if (message.includes("timeout")) {
     return NextResponse.json(
-      { error: "La page a mis trop de temps à répondre. Vérifiez l'URL." },
+      { error: "timeout" },
       { status: 408 }
     );
   }
   if (message.includes("private-ip") || message.includes("invalid-protocol")) {
     return NextResponse.json(
-      { error: "L'URL fournie n'est pas valide." },
+      { error: "invalidUrl" },
       { status: 400 }
     );
   }
   if (message.includes("not-html")) {
     return NextResponse.json(
-      { error: "Cette URL ne pointe pas vers une page web." },
+      { error: "notHtml" },
       { status: 422 }
     );
   }
   if (message.includes("empty-page")) {
     return NextResponse.json(
-      { error: "La page semble vide ou protégée contre le scraping." },
+      { error: "emptyPage" },
       { status: 422 }
     );
   }
   return NextResponse.json(
-    { error: "Impossible d'accéder à cette page. Vérifiez l'URL." },
+    { error: "cantAccess" },
     { status: 422 }
   );
 }

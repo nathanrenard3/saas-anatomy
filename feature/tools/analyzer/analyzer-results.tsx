@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { Badge } from "@/components/ui/badge";
 import { ThumbsUp, ThumbsDown, ExternalLink, RefreshCw, AlertCircle } from "lucide-react";
@@ -25,6 +26,8 @@ export function AnalyzerResults({
   onUnlock,
   hideShare,
 }: AnalyzerResultsProps) {
+  const t = useTranslations("analyzer");
+  const locale = useLocale();
   const [rewritesLoading, setRewritesLoading] = useState(false);
   const [rewritesLoaded, setRewritesLoaded] = useState(false);
   const [rewritesError, setRewritesError] = useState(false);
@@ -37,7 +40,7 @@ export function AnalyzerResults({
       const res = await fetch("/api/tools/analyze/rewrite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ analysisId: result.id }),
+        body: JSON.stringify({ analysisId: result.id, locale }),
       });
 
       if (!res.ok) {
@@ -72,7 +75,7 @@ export function AnalyzerResults({
       setRewritesLoading(false);
       setRewritesLoaded(true);
     }
-  }, [result.id, result.criteres]);
+  }, [result.id, result.criteres, locale]);
 
   const retryRewrites = useCallback(() => {
     setRewritesLoaded(false);
@@ -104,7 +107,7 @@ export function AnalyzerResults({
             <AnalyzerOverallScore score={result.score_global} />
             <div className="flex-1 space-y-4 text-center md:text-left">
               <div className="space-y-1">
-                <h2 className="text-xl font-bold">Résultat de l&apos;analyse</h2>
+                <h2 className="text-xl font-bold">{t("resultsTitle")}</h2>
                 <a
                   href={result.url}
                   target="_blank"
@@ -125,7 +128,7 @@ export function AnalyzerResults({
                   <div className="flex items-center gap-1.5">
                     <ThumbsUp className="w-3.5 h-3.5 text-green-600" />
                     <span className="text-xs font-medium text-green-700 dark:text-green-400">
-                      Points forts
+                      {t("strengths")}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -140,7 +143,7 @@ export function AnalyzerResults({
                   <div className="flex items-center gap-1.5">
                     <ThumbsDown className="w-3.5 h-3.5 text-orange-600" />
                     <span className="text-xs font-medium text-orange-700 dark:text-orange-400">
-                      Points faibles
+                      {t("weaknesses")}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -162,7 +165,7 @@ export function AnalyzerResults({
             <div className="flex justify-center">
               <ShareButton
                 path={`/tools/landing-page-analyzer/report/${result.id}`}
-                twitterText={`Mon site ${result.domain} a obtenu un score de ${result.score_global}/100 en audit copywriting !`}
+                twitterText={t("twitterShareText", { domain: result.domain, score: result.score_global })}
               />
             </div>
           </BlurFade>
@@ -172,9 +175,9 @@ export function AnalyzerResults({
         <div className="space-y-4">
           <BlurFade delay={0.2} inView>
             <h3 className="text-lg font-semibold">
-              Analyse détaillée
+              {t("detailedAnalysis")}
               <span className="text-sm font-normal text-muted-foreground ml-2">
-                ({result.criteres.length} critères)
+                {t("criteriaCount", { count: result.criteres.length })}
               </span>
             </h3>
           </BlurFade>
@@ -204,7 +207,7 @@ export function AnalyzerResults({
             <div className="flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-orange-500 shrink-0" />
               <p className="text-sm text-muted-foreground">
-                Les suggestions de réécriture n&apos;ont pas pu être générées.
+                {t("rewritesError")}
               </p>
             </div>
             <button
@@ -212,7 +215,7 @@ export function AnalyzerResults({
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-card hover:bg-muted transition-colors shrink-0"
             >
               <RefreshCw className="w-3 h-3" />
-              Réessayer
+              {t("retry")}
             </button>
           </div>
         )}
@@ -255,8 +258,8 @@ export function AnalyzerResults({
         {result.remaining_analyses >= 0 && (
           <p className="text-center text-xs text-muted-foreground">
             {result.remaining_analyses > 0
-              ? `Il te reste ${result.remaining_analyses} analyse${result.remaining_analyses > 1 ? "s" : ""} aujourd'hui.`
-              : "Tu as utilisé toutes tes analyses du jour. Reviens demain !"}
+              ? t("remainingAnalyses", { count: result.remaining_analyses })
+              : t("noRemainingAnalyses")}
           </p>
         )}
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { ArrowRight, FileText } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ interface LatestAnalysesSectionProps {
 }
 
 export function LatestAnalysesSection({ posts, maxPosts = 3 }: LatestAnalysesSectionProps) {
+  const t = useTranslations("latestAnalyses");
   // Get the latest posts limited by maxPosts
   const latestPosts = posts.slice(0, maxPosts);
 
@@ -24,14 +26,20 @@ export function LatestAnalysesSection({ posts, maxPosts = 3 }: LatestAnalysesSec
         <BlurFade delay={0.1} inView>
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight">
-              Derniers{" "}
-              <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                business analysés
-              </span>
+              {t.rich("title", {
+                highlight: (chunks) => (
+                  <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                    {chunks}
+                  </span>
+                ),
+              })}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Des analyses concrètes qui révèlent comment ces SaaS génèrent{" "}
-              <span className="font-semibold text-foreground">vraiment</span> leur revenu
+              {t.rich("description", {
+                bold: (chunks) => (
+                  <span className="font-semibold text-foreground">{chunks}</span>
+                ),
+              })}
             </p>
           </div>
         </BlurFade>
@@ -52,9 +60,9 @@ export function LatestAnalysesSection({ posts, maxPosts = 3 }: LatestAnalysesSec
                 <EmptyMedia variant="icon">
                   <FileText />
                 </EmptyMedia>
-                <EmptyTitle>Aucun article pour le moment</EmptyTitle>
+                <EmptyTitle>{t("noArticles")}</EmptyTitle>
                 <EmptyDescription>
-                  Revenez bientôt pour découvrir nos analyses !
+                  {t("noArticlesDescription")}
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>
@@ -72,7 +80,7 @@ export function LatestAnalysesSection({ posts, maxPosts = 3 }: LatestAnalysesSec
                 className="group"
               >
                 <Link href="/blog">
-                  Voir toutes les analyses
+                  {t("seeAll")}
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>

@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from 'next-intl';
+import { Link } from "@/i18n/routing";
 import { ArrowRight, Clock } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import type { BlogPost } from "@/lib/blog";
@@ -12,6 +13,7 @@ interface RelatedPostsSidebarProps {
 }
 
 export function RelatedPostsSidebar({ posts, currentSlug, maxPosts = 5 }: RelatedPostsSidebarProps) {
+  const t = useTranslations('blog');
   const relatedPosts = posts
     .filter((p) => p.slug !== currentSlug)
     .slice(0, maxPosts);
@@ -21,11 +23,11 @@ export function RelatedPostsSidebar({ posts, currentSlug, maxPosts = 5 }: Relate
       <div className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-6">
         <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
           <ArrowRight className="h-5 w-5 text-primary" />
-          Autres analyses
+          {t('otherAnalyses')}
         </h3>
 
         {relatedPosts.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Aucun autre article pour le moment.</p>
+          <p className="text-sm text-muted-foreground">{t('noOtherArticles')}</p>
         ) : (
           <div className="space-y-4">
             {relatedPosts.map((relatedPost) => (

@@ -1,9 +1,10 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { getAllPosts, getPostBySlug, getAlternatePost } from "@/lib/blog";
 import { ArrowLeft, Calendar, ChevronRight, Clock, Home, RefreshCw } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { PortableTextContent } from "@/components/portable-text-content";
@@ -16,19 +17,25 @@ import { JsonLd } from "@/components/json-ld";
 export const revalidate = 86400; // 24 hours in seconds
 
 export async function generateStaticParams() {
-  const posts = await getAllPosts();
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  const [frPosts, enPosts] = await Promise.all([
+    getAllPosts("fr"),
+    getAllPosts("en"),
+  ]);
+  return [
+    ...frPosts.map((post) => ({ slug: post.slug })),
+    ...enPosts.map((post) => ({ slug: post.slug })),
+  ];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const locale = await getLocale();
+  const t = await getTranslations("blog");
+  const post = await getPostBySlug(slug, locale);
 
   if (!post) {
     return {
-      title: 'Article introuvable',
+      title: t("articleNotFound"),
     };
   }
 
@@ -39,6 +46,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     ? `${siteUrl}${post.image}`
     : `${siteUrl}/images/default-thumb.webp`;
 
+  const alternateLanguages: Record<string, string> = {
+    [locale]: `${siteUrl}/${locale}/blog/${slug}`,
+  };
+
+  if (post.translationGroup) {
+    const otherLocale = locale === "fr" ? "en" : "fr";
+    const alternatePost = await getAlternatePost(post.translationGroup, otherLocale);
+    if (alternatePost) {
+      alternateLanguages[otherLocale] = `${siteUrl}/${otherLocale}/blog/${alternatePost.slug}`;
+    }
+  }
+
   return {
     title: `${post.title} | SaaS Anatomy`,
     description: post.excerpt,
@@ -46,8 +65,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     keywords: post.tags?.join(", "),
     openGraph: {
       type: "article",
-      locale: "fr_FR",
-      url: `${siteUrl}/blog/${slug}`,
+      locale: locale === "fr" ? "fr_FR" : "en_US",
+      url: `${siteUrl}/${locale}/blog/${slug}`,
       siteName: "SaaS Anatomy",
       title: post.title,
       description: post.excerpt,
@@ -71,7 +90,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       images: [imageUrl],
     },
     alternates: {
-      canonical: `${siteUrl}/blog/${slug}`,
+      canonical: `${siteUrl}/${locale}/blog/${slug}`,
+      languages: alternateLanguages,
     },
   };
 }
@@ -82,18 +102,22 @@ interface BlogPostPageProps {
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const locale = await getLocale();
+  const t = await getTranslations("blog");
+  const post = await getPostBySlug(slug, locale);
 
   if (!post) {
     notFound();
   }
 
   // Get all posts for related posts sidebar
-  const allPosts = await getAllPosts();
+  const allPosts = await getAllPosts(locale);
 
   // Generate structured data schemas
-  const articleSchema = generateArticleSchema(post);
-  const breadcrumbSchema = generateBreadcrumbSchema(post);
+  const articleSchema = generateArticleSchema(post, locale);
+  const breadcrumbSchema = generateBreadcrumbSchema(post, locale);
+
+  const dateLocale = locale === "fr" ? "fr-FR" : "en-US";
 
   return (
     <div className="min-h-screen relative">
@@ -114,7 +138,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
               <Link href="/" className="hover:text-primary transition-colors flex items-center gap-1">
                 <Home className="h-3.5 w-3.5" />
-                Accueil
+                {t("home")}
               </Link>
               <ChevronRight className="h-3.5 w-3.5" />
               <Link href="/blog" className="hover:text-primary transition-colors">
@@ -152,7 +176,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       <time dateTime={post.date}>
-                        {new Date(post.date).toLocaleDateString('fr-FR', {
+                        {new Date(post.date).toLocaleDateString(dateLocale, {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric'
@@ -164,14 +188,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4" />
-                      <span>{post.readingTime}</span>
+                      <span>{t("readingTime", { minutes: post.readingTime })}</span>
                     </div>
 
                     <span className="text-border">•</span>
 
                     <div className="flex items-center gap-2">
                       <RefreshCw className="h-4 w-4" />
-                      <span>Mis à jour le {new Date(post.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      <span>{t("updatedOn", { date: new Date(post.date).toLocaleDateString(dateLocale, { day: 'numeric', month: 'short', year: 'numeric' }) })}</span>
                     </div>
                   </div>
 
@@ -191,7 +215,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     <Button asChild variant="outline" className="gap-2">
                       <Link href="/blog">
                         <ArrowLeft className="h-4 w-4" />
-                        Tous les articles
+                        {t("allArticles")}
                       </Link>
                     </Button>
                   </div>

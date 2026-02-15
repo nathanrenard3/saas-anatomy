@@ -33,9 +33,10 @@ interface AIAnalysisResult {
 
 export async function analyzeContent(
   scraped: ScrapedContent,
-  url: string
+  url: string,
+  locale: string = "fr"
 ): Promise<AIAnalysisResult> {
-  const { systemPrompt, userMessage } = buildAnalysisPrompt(scraped, url);
+  const { systemPrompt, userMessage } = buildAnalysisPrompt(scraped, url, locale);
 
   const response = await getOpenAI().chat.completions.create({
     model: "gpt-4o",
@@ -75,12 +76,14 @@ export interface RewriteResult {
 export async function generateRewrites(
   weakCriteria: CriterionResult[],
   scraped: ScrapedContent,
-  url: string
+  url: string,
+  locale: string = "fr"
 ): Promise<RewriteResult> {
   const { systemPrompt, userMessage } = buildRewritePrompt(
     weakCriteria,
     scraped,
-    url
+    url,
+    locale
   );
 
   const response = await getOpenAI().chat.completions.create({

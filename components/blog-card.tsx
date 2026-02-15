@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { ArrowRight, Clock } from "lucide-react";
 import type { BlogPost } from "@/lib/blog";

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 
 interface AnalyzerOverallScoreProps {
@@ -21,6 +22,7 @@ function getStrokeColor(score: number): string {
 }
 
 export function AnalyzerOverallScore({ score }: AnalyzerOverallScoreProps) {
+  const t = useTranslations("analyzer");
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
@@ -83,7 +85,7 @@ export function AnalyzerOverallScore({ score }: AnalyzerOverallScoreProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2 }}
       >
-        Score global
+        {t("scoreLabel")}
       </motion.span>
     </div>
   );

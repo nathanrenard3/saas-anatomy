@@ -13,7 +13,7 @@ export function validateEmail(email: unknown): {
   const result = emailSchema.safeParse(email);
 
   if (!result.success) {
-    return { valid: false, error: "Email invalide." };
+    return { valid: false, error: "invalidEmail" };
   }
 
   const normalized = result.data;
@@ -22,7 +22,7 @@ export function validateEmail(email: unknown): {
   if (disposableSet.has(domain)) {
     return {
       valid: false,
-      error: "Les adresses email temporaires ne sont pas acceptées.",
+      error: "disposableEmail",
     };
   }
 

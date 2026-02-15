@@ -1,9 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState, ReactNode } from "react";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 
 interface FooterProps {
   latestPosts?: Array<{ slug: string; title: string }>;
@@ -73,13 +75,14 @@ function SocialLink({
 }
 
 export function Footer({ latestPosts = [] }: FooterProps) {
+  const t = useTranslations("footer");
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     articles: latestPosts.slice(0, 5),
     legal: [
-      { label: "Mentions légales", href: "/legal" },
-      { label: "Politique de confidentialité", href: "/privacy" },
+      { label: t("legalNotice"), href: "/legal" },
+      { label: t("privacyPolicy"), href: "/privacy" },
     ],
     social: [
       {
@@ -138,14 +141,14 @@ export function Footer({ latestPosts = [] }: FooterProps) {
               />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Analyse des SaaS rentables pour t'aider à construire ton propre business digital.
+              {t("brandDescription")}
             </p>
           </div>
 
           {/* Latest Articles */}
           {latestPosts.length > 0 && (
             <div className="lg:justify-self-end">
-              <h4 className="font-semibold text-foreground mb-4">Derniers articles</h4>
+              <h4 className="font-semibold text-foreground mb-4">{t("latestArticles")}</h4>
               <ul className="space-y-3">
                 {footerLinks.articles.map((article) => (
                   <li key={article.slug}>
@@ -163,14 +166,14 @@ export function Footer({ latestPosts = [] }: FooterProps) {
 
           {/* Tools */}
           <div className="lg:justify-self-end">
-            <h4 className="font-semibold text-foreground mb-4">Outils gratuits</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t("freeTools")}</h4>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/tools/landing-page-analyzer"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Analyse de copywriting
+                  {t("copywritingAnalysis")}
                 </Link>
               </li>
             </ul>
@@ -178,7 +181,7 @@ export function Footer({ latestPosts = [] }: FooterProps) {
 
           {/* Legal Links */}
           <div className="lg:justify-self-end">
-            <h4 className="font-semibold text-foreground mb-4">Légal</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t("legal")}</h4>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
@@ -195,7 +198,7 @@ export function Footer({ latestPosts = [] }: FooterProps) {
 
           {/* Social Media Links */}
           <div className="lg:justify-self-end">
-            <h4 className="font-semibold text-foreground mb-4">Suivez-nous</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t("followUs")}</h4>
             <div className="flex gap-4">
               {footerLinks.social.map((social) => (
                 <SocialLink
@@ -211,9 +214,12 @@ export function Footer({ latestPosts = [] }: FooterProps) {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border">
-          <p className="text-sm text-muted-foreground text-center">
-            © {currentYear} SaaS Anatomy. Tous droits réservés.
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              {t("copyright", { year: currentYear })}
+            </p>
+            <LocaleSwitcher />
+          </div>
         </div>
       </div>
     </footer>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { CTAButton } from "@/components/ui/cta-button";
@@ -7,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Mail, Sparkles, TrendingUp, Zap, ArrowRight } from "lucide-react";
 
 export function NewsletterCTASection() {
+  const t = useTranslations("newsletter");
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +29,7 @@ export function NewsletterCTASection() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de l\'inscription');
+        throw new Error(data.error || 'subscriptionError');
       }
 
       setStatus("success");
@@ -42,15 +44,15 @@ export function NewsletterCTASection() {
   const benefits = [
     {
       icon: Sparkles,
-      text: "Les dernières analyses de SaaS rentables"
+      text: t("benefit1")
     },
     {
       icon: TrendingUp,
-      text: "Des stratégies de croissance validées"
+      text: t("benefit2")
     },
     {
       icon: Zap,
-      text: "Des tactiques concrètes à appliquer"
+      text: t("benefit3")
     }
   ];
 
@@ -68,19 +70,21 @@ export function NewsletterCTASection() {
               <div className="text-center space-y-4">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
                   <Mail className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Newsletter gratuite</span>
+                  <span className="text-sm font-medium text-primary">{t("badge")}</span>
                 </div>
 
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-                  Reçois les{" "}
-                  <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                    meilleures analyses
-                  </span>{" "}
-                  directement
+                  {t.rich("title", {
+                    highlight: (chunks) => (
+                      <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                        {chunks}
+                      </span>
+                    ),
+                  })}
                 </h2>
 
                 <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                  Chaque mois, découvre comment des SaaS génèrent du revenu et les tactiques que tu peux appliquer à ton projet.
+                  {t("description")}
                 </p>
               </div>
 
@@ -114,7 +118,7 @@ export function NewsletterCTASection() {
                     />
                     <Input
                       type="email"
-                      placeholder="ton@email.com"
+                      placeholder={t("emailPlaceholder")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -128,24 +132,24 @@ export function NewsletterCTASection() {
                       className="h-11 px-6"
                       rightIcon={!isLoading ? <ArrowRight className="w-4 h-4" /> : undefined}
                     >
-                      {isLoading ? "..." : "S'inscrire"}
+                      {isLoading ? t("subscribing") : t("subscribe")}
                     </CTAButton>
                   </div>
 
                   {status === "success" && (
                     <p className="text-sm text-center text-green-600 dark:text-green-400">
-                      ✓ Inscription réussie !
+                      ✓ {t("success")}
                     </p>
                   )}
 
                   {status === "error" && (
                     <p className="text-sm text-center text-red-600 dark:text-red-400">
-                      ✗ Une erreur s'est produite. Réessaye plus tard.
+                      ✗ {t("error")}
                     </p>
                   )}
 
                   <p className="text-xs text-center text-muted-foreground">
-                    Pas de spam. Désinscription en un clic. Newsletters mensuelles uniquement.
+                    {t("noSpam")}
                   </p>
                 </form>
               </BlurFade>
@@ -154,7 +158,11 @@ export function NewsletterCTASection() {
               <BlurFade delay={0.5} inView>
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
-                    Rejoins les <span className="font-semibold text-foreground">entrepreneurs</span> qui construisent des SaaS rentables
+                    {t.rich("socialProof", {
+                      bold: (chunks) => (
+                        <span className="font-semibold text-foreground">{chunks}</span>
+                      ),
+                    })}
                   </p>
                 </div>
               </BlurFade>

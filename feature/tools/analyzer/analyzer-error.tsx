@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { CTAButton } from "@/components/ui/cta-button";
 
@@ -9,6 +10,8 @@ interface AnalyzerErrorProps {
 }
 
 export function AnalyzerError({ message, onRetry }: AnalyzerErrorProps) {
+  const t = useTranslations("analyzer");
+
   return (
     <section className="px-4 py-12">
       <div className="container mx-auto max-w-lg">
@@ -23,7 +26,7 @@ export function AnalyzerError({ message, onRetry }: AnalyzerErrorProps) {
             size="sm"
             leftIcon={<RefreshCw className="w-4 h-4" />}
           >
-            Réessayer
+            {t("retry")}
           </CTAButton>
         </div>
       </div>

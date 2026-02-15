@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations, useLocale } from 'next-intl';
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Clock, FileText } from "lucide-react";
@@ -15,6 +16,8 @@ interface BlogPostsGridProps {
 }
 
 export function BlogPostsGrid({ initialPosts, tags }: BlogPostsGridProps) {
+  const t = useTranslations('blog');
+  const locale = useLocale();
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const filteredPosts = selectedTag
@@ -36,7 +39,7 @@ export function BlogPostsGrid({ initialPosts, tags }: BlogPostsGridProps) {
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 }`}
               >
-                Tous les articles
+                {t('allPosts')}
               </button>
               {tags.map((tag) => (
                 <button
@@ -64,9 +67,9 @@ export function BlogPostsGrid({ initialPosts, tags }: BlogPostsGridProps) {
               <EmptyMedia variant="icon">
                 <FileText />
               </EmptyMedia>
-              <EmptyTitle>Aucun article pour le moment</EmptyTitle>
+              <EmptyTitle>{t('noArticles')}</EmptyTitle>
               <EmptyDescription>
-                Les premières analyses arrivent bientôt. Reviens vite pour découvrir les secrets des SaaS rentables !
+                {t('noArticlesDescription')}
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
@@ -119,7 +122,7 @@ export function BlogPostsGrid({ initialPosts, tags }: BlogPostsGridProps) {
                         </div>
                         <span className="text-border">•</span>
                         <time dateTime={post.date}>
-                          {new Date(post.date).toLocaleDateString('fr-FR', {
+                          {new Date(post.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
                             day: 'numeric',
                             month: 'short',
                             year: 'numeric'

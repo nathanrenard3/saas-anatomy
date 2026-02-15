@@ -8,11 +8,11 @@ import type { CriterionResult, ScrapedContent } from "@/lib/analyzer/types";
 
 export async function POST(request: NextRequest) {
   try {
-    const { analysisId } = await request.json();
+    const { analysisId, locale } = await request.json();
 
     if (!analysisId) {
       return NextResponse.json(
-        { error: "ID d'analyse manquant." },
+        { error: "missingAnalysisId" },
         { status: 400 }
       );
     }
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const leadEmail = cookieStore.get("lead_email")?.value;
     if (!leadEmail) {
       return NextResponse.json(
-        { error: "Accès non autorisé." },
+        { error: "unauthorized" },
         { status: 401 }
       );
     }
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const lead = await findLeadByEmail(leadEmail);
     if (!lead) {
       return NextResponse.json(
-        { error: "Accès non autorisé." },
+        { error: "unauthorized" },
         { status: 401 }
       );
     }
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     const analysis = await getAnalysisById(analysisId);
     if (!analysis) {
       return NextResponse.json(
-        { error: "Analyse introuvable." },
+        { error: "analysisNotFound" },
         { status: 404 }
       );
     }
@@ -77,7 +77,8 @@ export async function POST(request: NextRequest) {
     const rewrites = await generateRewrites(
       weakCriteria,
       scraped,
-      analysis.url
+      analysis.url,
+      locale
     );
 
     await storeRewrites(analysisId, rewrites.suggestions);
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Rewrite error:", error);
     return NextResponse.json(
-      { error: "La génération de suggestions a échoué." },
+      { error: "rewriteFailed" },
       { status: 502 }
     );
   }

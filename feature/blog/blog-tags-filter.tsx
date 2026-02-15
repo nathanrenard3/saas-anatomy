@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 
 interface BlogTagsFilterProps {
@@ -9,6 +10,7 @@ interface BlogTagsFilterProps {
 }
 
 export function BlogTagsFilter({ tags, selectedTag, onTagSelect }: BlogTagsFilterProps) {
+  const t = useTranslations('blog');
   if (tags.length === 0) return null;
 
   return (
@@ -20,7 +22,7 @@ export function BlogTagsFilter({ tags, selectedTag, onTagSelect }: BlogTagsFilte
           onClick={() => onTagSelect(null)}
           className="rounded-full"
         >
-          Tous les articles
+          {t('allPosts')}
         </Button>
         {tags.map((tag) => (
           <Button

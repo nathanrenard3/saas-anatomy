@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { Search } from "lucide-react";
 import { AnalyzerForm } from "./analyzer-form";
@@ -11,8 +12,21 @@ import type { AnalysisResult, AnalysisState } from "@/lib/analyzer/types";
 
 
 export function AnalyzerHero() {
+  const t = useTranslations("analyzer");
+  const tErrors = useTranslations("errors");
+  const locale = useLocale();
   const [state, setState] = useState<AnalysisState>({ status: "idle" });
   const [isUnlocked, setIsUnlocked] = useState(false);
+
+  const translateError = useCallback(
+    (errorCode: string): string => {
+      if (tErrors.has(errorCode)) {
+        return tErrors(errorCode as any);
+      }
+      return tErrors("genericError");
+    },
+    [tErrors]
+  );
 
   const handleAnalyze = useCallback(async (url: string) => {
     setState({ status: "analyzing", step: 0 });
@@ -21,28 +35,29 @@ export function AnalyzerHero() {
       const res = await fetch("/api/tools/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, locale }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Une erreur est survenue.");
+        setState({
+          status: "error",
+          message: translateError(data.error || "genericError"),
+        });
+        return;
       }
 
       const result: AnalysisResult = data;
       setIsUnlocked(result.isUnlocked);
       setState({ status: "complete", result });
-    } catch (error: unknown) {
+    } catch {
       setState({
         status: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Une erreur est survenue lors de l'analyse.",
+        message: tErrors("genericError"),
       });
     }
-  }, []);
+  }, [translateError, tErrors, locale]);
 
   const handleRetry = useCallback(() => {
     setState({ status: "idle" });
@@ -102,28 +117,29 @@ export function AnalyzerHero() {
                   <Search className="h-3.5 w-3.5 text-primary" />
                 </div>
                 <span className="relative text-sm font-medium text-foreground">
-                  Audit gratuit - 10 critères analysés
+                  {t("badge")}
                 </span>
               </div>
             </BlurFade>
 
             <BlurFade delay={0.2} inView>
               <h1 className="relative text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tighter leading-[1.1] max-w-4xl">
-                Audite le{" "}
-                <span className="relative inline-block">
-                  <span className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                    copywriting
-                  </span>
-                  <span className="absolute inset-0 bg-linear-to-r from-primary/8 via-primary/12 to-primary/8 blur-2xl -z-10" aria-hidden="true" />
-                </span>{" "}
-                de ta page en 30 secondes
+                {t.rich("heroTitle", {
+                  highlight: (chunks) => (
+                    <span className="relative inline-block">
+                      <span className="bg-linear-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                        {chunks}
+                      </span>
+                      <span className="absolute inset-0 bg-linear-to-r from-primary/8 via-primary/12 to-primary/8 blur-2xl -z-10" aria-hidden="true" />
+                    </span>
+                  ),
+                })}
               </h1>
             </BlurFade>
 
             <BlurFade delay={0.3} inView>
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl text-balance">
-                Découvre si ton copywriting convertit vraiment ta cible.
-                10 critères analysés par IA pour un rapport actionable.
+                {t("heroDescription")}
               </p>
             </BlurFade>
 

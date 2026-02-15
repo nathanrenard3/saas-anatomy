@@ -1,18 +1,20 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import { ArrowRight } from "lucide-react";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import { CTAButtonLink } from "@/components/ui/cta-button";
 
 export function NewsletterSidebarCTA() {
+  const t = useTranslations('blog');
   return (
     <BlurFade delay={0.4} inView>
       <div className="rounded-2xl border border-primary/20 bg-linear-to-br from-primary/10 to-background p-6">
         <h3 className="text-lg font-bold mb-3">
-          Ne rate rien
+          {t('dontMiss')}
         </h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Reçois les nouvelles analyses directement par email.
+          {t('dontMissDescription')}
         </p>
         <CTAButtonLink
           href="/#newsletter"
@@ -20,7 +22,7 @@ export function NewsletterSidebarCTA() {
           className="w-full"
           rightIcon={<ArrowRight className="h-4 w-4" />}
         >
-          M&apos;inscrire
+          {t('subscribeShort')}
         </CTAButtonLink>
       </div>
     </BlurFade>

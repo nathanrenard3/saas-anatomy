@@ -9,12 +9,12 @@ import { storeAnalysis } from "@/lib/analyzer/storage";
 
 export async function POST(request: NextRequest) {
   try {
-    const { url } = await request.json();
+    const { url, locale } = await request.json();
 
     const parsed = parseUrl(url);
     if (!parsed) {
       return NextResponse.json(
-        { error: "L'URL fournie n'est pas valide." },
+        { error: "invalidUrl" },
         { status: 400 }
       );
     }
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     const { allowed, remaining } = await checkRateLimit(ip);
     if (!allowed) {
       return NextResponse.json(
-        { error: "Limite atteinte (5/jour). Revenez demain !" },
+        { error: "rateLimited" },
         { status: 429 }
       );
     }
@@ -51,10 +51,10 @@ export async function POST(request: NextRequest) {
 
     let analysis;
     try {
-      analysis = await analyzeContent(scraped, url);
+      analysis = await analyzeContent(scraped, url, locale);
     } catch {
       return NextResponse.json(
-        { error: "L'analyse a échoué. Réessayez dans quelques instants." },
+        { error: "analysisFailed" },
         { status: 502 }
       );
     }
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Analysis error:", error);
     return NextResponse.json(
-      { error: "Une erreur est survenue lors de l'analyse." },
+      { error: "genericError" },
       { status: 500 }
     );
   }

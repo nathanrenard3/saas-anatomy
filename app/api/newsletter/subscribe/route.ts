@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     // Honeypot check — silently succeed to not alert bots
     if (isHoneypotFilled(website)) {
       return NextResponse.json(
-        { message: 'Inscription réussie !' },
+        { message: 'success' },
         { status: 200 }
       );
     }
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     if (!process.env.BREVO_API_KEY) {
       console.error('BREVO_API_KEY is not configured');
       return NextResponse.json(
-        { error: 'Configuration serveur incorrecte' },
+        { error: 'serverError' },
         { status: 500 }
       );
     }
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     await apiInstance.createContact(createContact);
 
     return NextResponse.json(
-      { message: 'Inscription réussie !' },
+      { message: 'success' },
       { status: 200 }
     );
   } catch (error: any) {
@@ -58,13 +58,13 @@ export async function POST(request: Request) {
     // Handle duplicate contact error
     if (error.response?.body?.code === 'duplicate_parameter') {
       return NextResponse.json(
-        { error: 'Cet email est déjà inscrit' },
+        { error: 'duplicateEmail' },
         { status: 409 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Une erreur est survenue lors de l\'inscription' },
+      { error: 'subscriptionError' },
       { status: 500 }
     );
   }

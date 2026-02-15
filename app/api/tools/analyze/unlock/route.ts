@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Unlock error:", error);
     return NextResponse.json(
-      { error: "Une erreur est survenue." },
+      { error: "subscriptionError" },
       { status: 500 }
     );
   }

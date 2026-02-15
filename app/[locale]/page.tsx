@@ -1,3 +1,4 @@
+import { getLocale } from "next-intl/server";
 import { getAllPosts } from "@/lib/blog";
 import { Navbar } from "@/feature/Marketing/navbar";
 import { HeroSection } from "@/feature/Marketing/hero-section";
@@ -8,7 +9,8 @@ import { NewsletterCTASection } from "@/feature/Marketing/newsletter-cta-section
 import { Footer } from "@/feature/Marketing/footer";
 
 export default async function Home() {
-  const posts = await getAllPosts();
+  const locale = await getLocale();
+  const posts = await getAllPosts(locale);
   const latestPostsForFooter = posts.map(post => ({
     slug: post.slug,
     title: post.title

@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,11 +24,13 @@ function HamburgerButton({
   isOpen: boolean;
   onClick: () => void;
 }) {
+  const t = useTranslations("nav");
+
   return (
     <motion.button
       onClick={onClick}
       className="md:hidden relative z-50 flex size-10 items-center justify-center rounded-full border border-border/60 bg-background/90 backdrop-blur-sm transition-all duration-300 hover:bg-primary/10 hover:border-primary/40 shadow-sm hover:shadow-md hover:shadow-primary/10"
-      aria-label="Toggle menu"
+      aria-label={t("toggleMenu")}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
@@ -50,6 +53,8 @@ function MobileNav({
   onClose: () => void;
   featuredPosts: BlogPost[];
 }) {
+  const t = useTranslations("nav");
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -88,7 +93,7 @@ function MobileNav({
                 transition={{ delay: 0.05 }}
               >
                 <span className="block px-4 py-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Outils gratuits
+                  {t("freeTools")}
                 </span>
                 <Link
                   href="/tools/landing-page-analyzer"
@@ -96,7 +101,7 @@ function MobileNav({
                   className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-primary/10 hover:text-primary transition-all duration-300 border border-transparent hover:border-primary/20"
                 >
                   <Search className="w-4 h-4 text-primary" />
-                  Analyse de copywriting
+                  {t("copywritingAnalysis")}
                 </Link>
               </motion.div>
 
@@ -112,7 +117,7 @@ function MobileNav({
                   size="default"
                   onClick={onClose}
                 >
-                  En apprendre plus
+                  {t("learnMore")}
                 </CTAButtonLink>
               </motion.div>
             </nav>
@@ -124,6 +129,7 @@ function MobileNav({
 }
 
 export function NavbarClient({ featuredPosts }: { featuredPosts: BlogPost[] }) {
+  const t = useTranslations("nav");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -188,7 +194,7 @@ export function NavbarClient({ featuredPosts }: { featuredPosts: BlogPost[] }) {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent hover:bg-primary/5 data-[state=open]:bg-primary/5">
-                  Outils gratuits
+                  {t("freeTools")}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="w-[300px] p-2">
@@ -202,9 +208,9 @@ export function NavbarClient({ featuredPosts }: { featuredPosts: BlogPost[] }) {
                             <Search className="w-3.5 h-3.5 text-primary" />
                           </div>
                           <div>
-                            <span className="text-sm font-medium">Analyse de copywriting</span>
+                            <span className="text-sm font-medium">{t("copywritingAnalysis")}</span>
                             <p className="text-xs text-muted-foreground mt-0.5">
-                              Évaluez votre copywriting avec l&apos;IA
+                              {t("copywritingAnalysisDescription")}
                             </p>
                           </div>
                         </Link>
@@ -224,7 +230,7 @@ export function NavbarClient({ featuredPosts }: { featuredPosts: BlogPost[] }) {
               className="hidden md:flex shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-shadow duration-300"
               size="sm"
             >
-              En apprendre plus
+              {t("learnMore")}
             </CTAButtonLink>
             <HamburgerButton
               isOpen={isMobileMenuOpen}
