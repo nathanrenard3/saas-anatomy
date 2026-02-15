@@ -202,12 +202,16 @@ async function fetchHtmlWithBrowser(url: string): Promise<string> {
       return route.continue();
     });
 
+    // Use domcontentloaded instead of networkidle — SPAs often keep
+    // persistent connections (analytics, WebSockets, polling) that
+    // prevent networkidle from ever resolving.
     await page.goto(url, {
-      waitUntil: "networkidle",
+      waitUntil: "domcontentloaded",
       timeout: BROWSER_TIMEOUT_MS,
     });
 
-    await page.waitForTimeout(1000);
+    // Give JS frameworks time to hydrate and render content
+    await page.waitForTimeout(3000);
 
     const html = await page.content();
     await context.close();
