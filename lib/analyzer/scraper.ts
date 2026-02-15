@@ -3,7 +3,8 @@ import type { ScrapedContent } from "./types";
 
 const BODY_TEXT_MAX_LENGTH = 4000;
 const FETCH_TIMEOUT_MS = 10_000;
-const BROWSER_TIMEOUT_MS = 15_000;
+const BROWSER_NAVIGATION_TIMEOUT_MS = 15_000;
+const BROWSER_TOTAL_TIMEOUT_MS = 30_000;
 const MIN_BODY_TEXT_LENGTH = 50;
 
 const BLOCKED_HOSTS = [
@@ -185,35 +186,45 @@ async function fetchHtmlWithBrowser(url: string): Promise<string> {
     throw new Error("scrape:browser-not-configured");
   }
 
+  // Global timeout safety net — if anything hangs, we bail out
+  const result = await Promise.race([
+    fetchHtmlWithBrowserImpl(chromium, wsEndpoint, url),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("scrape:browser-timeout")), BROWSER_TOTAL_TIMEOUT_MS)
+    ),
+  ]);
+
+  return result;
+}
+
+async function fetchHtmlWithBrowserImpl(
+  chromium: Awaited<typeof import("playwright-core")>["chromium"],
+  wsEndpoint: string,
+  url: string
+): Promise<string> {
   let browser;
   try {
-    browser = await chromium.connect(wsEndpoint);
+    console.info("[scraper:browser] Connecting to", wsEndpoint.replace(/token=.*/, "token=***"));
+    browser = await chromium.connectOverCDP(wsEndpoint);
+    console.info("[scraper:browser] Connected, creating context...");
+
     const context = await browser.newContext({
       userAgent:
         "Mozilla/5.0 (compatible; SaaSAnatomyBot/1.0; +https://saas-anatomy.com)",
     });
     const page = await context.newPage();
+    console.info("[scraper:browser] Navigating to", url);
 
-    await page.route("**/*", (route) => {
-      const type = route.request().resourceType();
-      if (["image", "media", "font", "stylesheet"].includes(type)) {
-        return route.abort();
-      }
-      return route.continue();
-    });
-
-    // Use domcontentloaded instead of networkidle — SPAs often keep
-    // persistent connections (analytics, WebSockets, polling) that
-    // prevent networkidle from ever resolving.
     await page.goto(url, {
       waitUntil: "domcontentloaded",
-      timeout: BROWSER_TIMEOUT_MS,
+      timeout: BROWSER_NAVIGATION_TIMEOUT_MS,
     });
+    console.info("[scraper:browser] DOM loaded, waiting 3s for hydration...");
 
-    // Give JS frameworks time to hydrate and render content
     await page.waitForTimeout(3000);
 
     const html = await page.content();
+    console.info("[scraper:browser] Got HTML:", html.length, "chars");
     await context.close();
     return html;
   } finally {

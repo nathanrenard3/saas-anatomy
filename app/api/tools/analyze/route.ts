@@ -21,16 +21,23 @@ export async function POST(request: NextRequest) {
 
     const ip = getClientIp(request.headers);
 
-    const { allowed, remaining } = await checkRateLimit(ip);
-    if (!allowed) {
-      return NextResponse.json(
-        { error: "rateLimited" },
-        { status: 429 }
-      );
-    }
-
     const cookieStore = await cookies();
     const leadEmail = cookieStore.get("lead_email")?.value;
+
+    const isAdmin = leadEmail === process.env.ADMIN_EMAIL;
+
+    let remaining = Infinity;
+    if (!isAdmin) {
+      const rateLimit = await checkRateLimit(ip);
+      if (!rateLimit.allowed) {
+        return NextResponse.json(
+          { error: "rateLimited" },
+          { status: 429 }
+        );
+      }
+      remaining = rateLimit.remaining;
+    }
+
     let leadId: string | null = null;
     let isUnlocked = false;
 
