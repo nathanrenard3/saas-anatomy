@@ -1,17 +1,32 @@
 import { ImageResponse } from "next/og";
+import {
+  OgWrapper,
+  OgBackground,
+  OgCornerBrackets,
+  OgLogo,
+  OgBottomBar,
+  loadOgAssets,
+  ogResponseOptions,
+  resolveLocale,
+  PRIMARY,
+  TEXT,
+  TEXT_MUTED,
+} from "@/lib/og/shared";
 
 export const runtime = "edge";
-
-const PRIMARY = "#1347e6";
 
 const i18n = {
   fr: {
     text: "Analyse les SaaS qui",
     highlight: "rapportent vraiment de l'argent",
+    subtitle: "Le guide pour passer du side project aux vrais revenus",
+    bottom: "Découvre les coulisses sur",
   },
   en: {
     text: "Analyze the SaaS that",
     highlight: "actually make money",
+    subtitle: "The guide to going from side project to real revenue",
+    bottom: "Go behind the scenes on",
   },
 } as const;
 
@@ -19,103 +34,29 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ locale: string }> }
 ) {
-  const { locale } = await params;
-
-  if (locale !== "fr" && locale !== "en") {
-    return new Response("Not found", { status: 404 });
-  }
-
-  const t = i18n[locale as keyof typeof i18n];
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
+  const t = i18n[locale];
   const baseUrl = new URL(request.url).origin;
 
-  const [bgImageData, logoData, geistRegular, geistBold] = await Promise.all([
-    fetch(`${baseUrl}/og-background.png`).then((res) => res.arrayBuffer()),
-    fetch(`${baseUrl}/logo.png`).then((res) => res.arrayBuffer()),
-    fetch(
-      "https://cdn.jsdelivr.net/fontsource/fonts/geist-sans@latest/latin-400-normal.woff"
-    ).then((res) => res.arrayBuffer()),
-    fetch(
-      "https://cdn.jsdelivr.net/fontsource/fonts/geist-sans@latest/latin-700-normal.woff"
-    ).then((res) => res.arrayBuffer()),
-  ]);
+  const { bgImageData, logoData, geistRegular, geistBold } =
+    await loadOgAssets(baseUrl);
 
   return new ImageResponse(
     (
-      <div
-        style={{
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "#0a0a0a",
-          fontFamily: "Geist",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        {/* Background image */}
-        <img
-          src={bgImageData as unknown as string}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
+      <OgWrapper>
+        <OgBackground bgImageData={bgImageData} />
+        <OgCornerBrackets />
 
-        {/* Blue glow bottom-left */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: -120,
-            left: -80,
-            width: 500,
-            height: 500,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(19, 71, 230, 0.18), transparent 70%)",
-          }}
-        />
+        <OgLogo logoData={logoData} />
 
-        {/* Blue glow top-right */}
-        <div
-          style={{
-            position: "absolute",
-            top: -80,
-            right: -60,
-            width: 400,
-            height: 400,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(19, 71, 230, 0.10), transparent 70%)",
-          }}
-        />
-
-        {/* Top bar: logo */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            padding: "36px 52px 0 52px",
-            position: "relative",
-          }}
-        >
-          <img
-            src={logoData as unknown as string}
-            style={{ height: 58 }}
-          />
-        </div>
-
-        {/* Main content: hero title */}
+        {/* Main content */}
         <div
           style={{
             display: "flex",
             flex: 1,
             alignItems: "center",
-            padding: "0 52px 60px 52px",
+            padding: "0 52px",
             position: "relative",
           }}
         >
@@ -123,55 +64,48 @@ export async function GET(
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: 8,
+              gap: 12,
             }}
           >
             <span
               style={{
-                fontSize: 48,
+                fontSize: 52,
                 fontWeight: 700,
-                lineHeight: 1.2,
+                lineHeight: 1.15,
                 letterSpacing: "-0.03em",
-                color: "#0a0a0a",
+                color: TEXT,
               }}
             >
               {t.text}
             </span>
             <span
               style={{
-                fontSize: 48,
+                fontSize: 52,
                 fontWeight: 700,
-                lineHeight: 1.2,
+                lineHeight: 1.15,
                 letterSpacing: "-0.03em",
                 color: PRIMARY,
               }}
             >
               {t.highlight}
             </span>
+            <span
+              style={{
+                fontSize: 20,
+                fontWeight: 400,
+                lineHeight: 1.4,
+                color: TEXT_MUTED,
+                marginTop: 8,
+              }}
+            >
+              {t.subtitle}
+            </span>
           </div>
         </div>
-      </div>
+
+        <OgBottomBar text={t.bottom} />
+      </OgWrapper>
     ),
-    {
-      width: 1200,
-      height: 630,
-      fonts: [
-        {
-          name: "Geist",
-          data: geistRegular,
-          weight: 400,
-          style: "normal" as const,
-        },
-        {
-          name: "Geist",
-          data: geistBold,
-          weight: 700,
-          style: "normal" as const,
-        },
-      ],
-      headers: {
-        "Cache-Control": "public, max-age=604800, s-maxage=604800, immutable",
-      },
-    }
+    ogResponseOptions(geistRegular, geistBold)
   );
 }

@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: t("metaOgDescription"),
       images: [
         {
-          url: "/og-image.png",
+          url: `/${locale}/tools/landing-page-analyzer/og`,
           width: 1200,
           height: 630,
           alt: t("metaTitle"),
@@ -35,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: t("metaTitle"),
       description: t("metaOgDescription"),
-      images: ["/og-image.png"],
+      images: [`/${locale}/tools/landing-page-analyzer/og`],
     },
     alternates: {
       canonical: `${siteUrl}/${locale}/tools/landing-page-analyzer`,

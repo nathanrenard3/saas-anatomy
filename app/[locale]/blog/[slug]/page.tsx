@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   const siteUrl = "https://saas-anatomy.com";
+  const ogImageUrl = `/${locale}/blog/${slug}/og`;
   const imageUrl = post.image?.startsWith("http")
     ? post.image
     : post.image
@@ -72,7 +73,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description: post.excerpt,
       images: [
         {
-          url: imageUrl,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: post.title,
@@ -87,7 +88,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
-      images: [imageUrl],
+      images: [ogImageUrl],
     },
     alternates: {
       canonical: `${siteUrl}/${locale}/blog/${slug}`,

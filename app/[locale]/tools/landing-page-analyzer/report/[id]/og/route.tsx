@@ -1,13 +1,24 @@
 import { ImageResponse } from "next/og";
 import { getAnalysisById } from "@/lib/analyzer/storage";
+import {
+  OgWrapper,
+  OgBackground,
+  OgCornerBrackets,
+  OgLogo,
+  OgLabel,
+  OgBottomBar,
+  loadOgAssets,
+  ogResponseOptions,
+  resolveLocale,
+  truncate,
+  TEXT,
+  TEXT_MUTED,
+} from "@/lib/og/shared";
 
 export const runtime = "edge";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-// Primary color: oklch(0.488 0.243 264.376) ≈ #1347e6
-const PRIMARY = "#1347e6";
 
 function getScoreColor(score: number): string {
   if (score >= 70) return "#22c55e";
@@ -31,17 +42,13 @@ const i18n = {
   },
 } as const;
 
-function truncate(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength - 1).trimEnd() + "\u2026";
-}
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ locale: string; id: string }> }
 ) {
-  const { locale, id } = await params;
-  const t = i18n[locale as keyof typeof i18n] ?? i18n.fr;
+  const { locale: rawLocale, id } = await params;
+  const locale = resolveLocale(rawLocale);
+  const t = i18n[locale];
 
   if (!UUID_REGEX.test(id)) {
     return new Response("Not found", { status: 404 });
@@ -72,86 +79,16 @@ export async function GET(
 
   const baseUrl = new URL(request.url).origin;
 
-  const [bgImageData, logoData, geistRegular, geistBold] = await Promise.all([
-    fetch(`${baseUrl}/og-background.png`).then((res) => res.arrayBuffer()),
-    fetch(`${baseUrl}/logo.png`).then((res) => res.arrayBuffer()),
-    fetch(
-      "https://cdn.jsdelivr.net/fontsource/fonts/geist-sans@latest/latin-400-normal.woff"
-    ).then((res) => res.arrayBuffer()),
-    fetch(
-      "https://cdn.jsdelivr.net/fontsource/fonts/geist-sans@latest/latin-700-normal.woff"
-    ).then((res) => res.arrayBuffer()),
-  ]);
+  const { bgImageData, logoData, geistRegular, geistBold } =
+    await loadOgAssets(baseUrl);
 
   return new ImageResponse(
     (
-      <div
-        style={{
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "#0a0a0a",
-          fontFamily: "Geist",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        {/* Background image */}
-        <img
-          src={bgImageData as unknown as string}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
+      <OgWrapper>
+        <OgBackground bgImageData={bgImageData} />
+        <OgCornerBrackets />
 
-        {/* Blue glow bottom-left */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: -120,
-            left: -80,
-            width: 500,
-            height: 500,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(19, 71, 230, 0.18), transparent 70%)",
-          }}
-        />
-
-        {/* Blue glow top-right */}
-        <div
-          style={{
-            position: "absolute",
-            top: -80,
-            right: -60,
-            width: 400,
-            height: 400,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(19, 71, 230, 0.10), transparent 70%)",
-          }}
-        />
-
-{/* Top bar: logo */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            padding: "36px 52px 0 52px",
-            position: "relative",
-          }}
-        >
-          <img
-            src={logoData as unknown as string}
-            style={{ height: 58 }}
-          />
-        </div>
+        <OgLogo logoData={logoData} />
 
         {/* Main content: score + text */}
         <div
@@ -160,7 +97,8 @@ export async function GET(
             alignItems: "center",
             flex: 1,
             padding: "0 52px",
-            gap: 52,
+            gap: 48,
+            position: "relative",
           }}
         >
           {/* Left: SVG score ring */}
@@ -175,16 +113,16 @@ export async function GET(
             <div
               style={{
                 position: "relative",
-                width: 190,
-                height: 190,
+                width: 200,
+                height: 200,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
               <svg
-                width="190"
-                height="190"
+                width="200"
+                height="200"
                 viewBox="0 0 120 120"
                 style={{ transform: "rotate(-90deg)" }}
               >
@@ -219,7 +157,7 @@ export async function GET(
               >
                 <span
                   style={{
-                    fontSize: 58,
+                    fontSize: 62,
                     fontWeight: 700,
                     color: color,
                     lineHeight: 1,
@@ -251,25 +189,14 @@ export async function GET(
               minWidth: 0,
             }}
           >
-            {/* Label */}
-            <span
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: PRIMARY,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase" as const,
-              }}
-            >
-              {t.label}
-            </span>
+            <OgLabel>{t.label}</OgLabel>
 
             {/* Domain */}
             <span
               style={{
                 fontSize: 42,
                 fontWeight: 700,
-                color: "#0a0a0a",
+                color: TEXT,
                 lineHeight: 1.1,
                 letterSpacing: "-0.03em",
                 overflow: "hidden",
@@ -286,7 +213,7 @@ export async function GET(
                 style={{
                   fontSize: 17,
                   fontWeight: 400,
-                  color: "rgba(0, 0, 0, 0.5)",
+                  color: TEXT_MUTED,
                   lineHeight: 1.4,
                 }}
               >
@@ -295,14 +222,34 @@ export async function GET(
             )}
 
             {/* Strengths & Weaknesses */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 4 }}>
-              {/* Points forts */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 12,
+                marginTop: 4,
+              }}
+            >
               {strengths.length > 0 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: "#15803d" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 500,
+                      color: "#15803d",
+                    }}
+                  >
                     {t.strengths}
                   </span>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  <div
+                    style={{ display: "flex", flexWrap: "wrap", gap: 6 }}
+                  >
                     {strengths.map((s: string) => (
                       <div
                         key={s}
@@ -312,9 +259,16 @@ export async function GET(
                           padding: "4px 10px",
                           borderRadius: 20,
                           border: "1px solid rgba(34, 197, 94, 0.3)",
+                          backgroundColor: "rgba(34, 197, 94, 0.04)",
                         }}
                       >
-                        <span style={{ fontSize: 12, color: "#15803d", fontWeight: 500 }}>
+                        <span
+                          style={{
+                            fontSize: 12,
+                            color: "#15803d",
+                            fontWeight: 500,
+                          }}
+                        >
                           {truncate(s, 28)}
                         </span>
                       </div>
@@ -323,13 +277,26 @@ export async function GET(
                 </div>
               )}
 
-              {/* Points faibles */}
               {weaknesses.length > 0 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: "#c2410c" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 500,
+                      color: "#c2410c",
+                    }}
+                  >
                     {t.weaknesses}
                   </span>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  <div
+                    style={{ display: "flex", flexWrap: "wrap", gap: 6 }}
+                  >
                     {weaknesses.map((w: string) => (
                       <div
                         key={w}
@@ -339,9 +306,16 @@ export async function GET(
                           padding: "4px 10px",
                           borderRadius: 20,
                           border: "1px solid rgba(249, 115, 22, 0.3)",
+                          backgroundColor: "rgba(249, 115, 22, 0.04)",
                         }}
                       >
-                        <span style={{ fontSize: 12, color: "#c2410c", fontWeight: 500 }}>
+                        <span
+                          style={{
+                            fontSize: 12,
+                            color: "#c2410c",
+                            fontWeight: 500,
+                          }}
+                        >
                           {truncate(w, 28)}
                         </span>
                       </div>
@@ -353,50 +327,9 @@ export async function GET(
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "16px 52px",
-            background:
-              "linear-gradient(to right, rgba(19, 71, 230, 0.04), rgba(19, 71, 230, 0.10), rgba(19, 71, 230, 0.04))",
-            borderTop: "1px solid rgba(19, 71, 230, 0.08)",
-            gap: 8,
-          }}
-        >
-          <span
-            style={{
-              fontSize: 15,
-              fontWeight: 500,
-              color: "rgba(0, 0, 0, 0.45)",
-            }}
-          >
-            {t.cta}
-          </span>
-          <span
-            style={{
-              fontSize: 15,
-              fontWeight: 600,
-              color: PRIMARY,
-            }}
-          >
-            saas-anatomy.com
-          </span>
-        </div>
-      </div>
+        <OgBottomBar text={t.cta} />
+      </OgWrapper>
     ),
-    {
-      width: 1200,
-      height: 630,
-      fonts: [
-        { name: "Geist", data: geistRegular, weight: 400, style: "normal" as const },
-        { name: "Geist", data: geistBold, weight: 700, style: "normal" as const },
-      ],
-      headers: {
-        "Cache-Control": "public, max-age=86400, s-maxage=86400",
-      },
-    }
+    ogResponseOptions(geistRegular, geistBold, 86400)
   );
 }
