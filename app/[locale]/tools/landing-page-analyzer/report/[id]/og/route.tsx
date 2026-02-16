@@ -16,6 +16,21 @@ function getScoreColor(score: number): string {
   return "#ef4444";
 }
 
+const i18n = {
+  fr: {
+    label: "Audit Copywriting",
+    strengths: "Points forts",
+    weaknesses: "Points faibles",
+    cta: "Analyse ta landing page gratuitement sur",
+  },
+  en: {
+    label: "Copywriting Audit",
+    strengths: "Strengths",
+    weaknesses: "Weaknesses",
+    cta: "Analyze your landing page for free on",
+  },
+} as const;
+
 function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength - 1).trimEnd() + "\u2026";
@@ -23,9 +38,10 @@ function truncate(text: string, maxLength: number): string {
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ locale: string; id: string }> }
 ) {
-  const { id } = await params;
+  const { locale, id } = await params;
+  const t = i18n[locale as keyof typeof i18n] ?? i18n.fr;
 
   if (!UUID_REGEX.test(id)) {
     return new Response("Not found", { status: 404 });
@@ -133,7 +149,7 @@ export async function GET(
         >
           <img
             src={logoData as unknown as string}
-            style={{ height: 44 }}
+            style={{ height: 58 }}
           />
         </div>
 
@@ -245,7 +261,7 @@ export async function GET(
                 textTransform: "uppercase" as const,
               }}
             >
-              Audit Copywriting
+              {t.label}
             </span>
 
             {/* Domain */}
@@ -284,7 +300,7 @@ export async function GET(
               {strengths.length > 0 && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   <span style={{ fontSize: 12, fontWeight: 500, color: "#15803d" }}>
-                    Points forts
+                    {t.strengths}
                   </span>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     {strengths.map((s: string) => (
@@ -311,7 +327,7 @@ export async function GET(
               {weaknesses.length > 0 && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   <span style={{ fontSize: 12, fontWeight: 500, color: "#c2410c" }}>
-                    Points faibles
+                    {t.weaknesses}
                   </span>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     {weaknesses.map((w: string) => (
@@ -357,7 +373,7 @@ export async function GET(
               color: "rgba(0, 0, 0, 0.45)",
             }}
           >
-            Analyse ta landing page gratuitement sur
+            {t.cta}
           </span>
           <span
             style={{

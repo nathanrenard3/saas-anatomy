@@ -52,7 +52,7 @@ export async function generateMetadata({
       description: t("siteDescription"),
       images: [
         {
-          url: "/og-default.png",
+          url: `/${locale}/og`,
           width: 1200,
           height: 630,
           alt: t("siteTitle"),
@@ -63,7 +63,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: t("siteTitle"),
       description: t("siteDescription"),
-      images: ["/og-default.png"],
+      images: [`/${locale}/og`],
     },
     robots: {
       index: true,
@@ -95,7 +95,7 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
 
-  if (!routing.locales.includes(locale as any)) {
+  if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
     notFound();
   }
 

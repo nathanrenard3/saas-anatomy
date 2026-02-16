@@ -3,155 +3,251 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard — SaaS Anatomy (Maquette)</title>
+  <title>Dashboard — SaaS Anatomy (Maquette V2)</title>
   <link rel="stylesheet" href="../shared/styles.css">
   <style>
-    /* Styles spécifiques à cette maquette */
-    .analysis-row {
+    /* === Dashboard-specific styles === */
+
+    /* Mon site - hero card */
+    .my-site-card {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .my-site-score {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .my-site-score .label {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .my-site-info {
+      flex: 1;
+    }
+
+    .my-site-url {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .my-site-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .my-site-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Competitor row */
+    .competitor-item {
       display: flex;
       align-items: center;
       gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
     }
-    .analysis-info {
+
+    .competitor-item:last-child { border-bottom: none; }
+
+    .competitor-rank {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      width: 20px;
+    }
+
+    .competitor-domain {
       flex: 1;
-      min-width: 0;
+      font-weight: 500;
     }
+
+    .competitor-score {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .competitor-delta {
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .competitor-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    /* Mini evolution sparkline placeholder */
+    .sparkline {
+      width: 80px;
+      height: 32px;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+    }
+
+    .sparkline-bar {
+      flex: 1;
+      background: var(--primary);
+      border-radius: 2px 2px 0 0;
+      opacity: 0.6;
+      transition: opacity 0.15s;
+    }
+
+    .sparkline-bar:last-child {
+      opacity: 1;
+    }
+
+    .sparkline-bar:hover {
+      opacity: 1;
+    }
+
+    /* Criteria mini-grid */
+    .criteria-mini {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .criteria-mini-item {
+      text-align: center;
+      padding: 8px 4px;
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .criteria-mini-item .score {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .criteria-mini-item .name {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+
+    /* Recent analyses table tweaks */
     .analysis-url {
       font-weight: 500;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .analysis-date {
-      font-size: 12px;
+
+    .analysis-type {
+      font-size: 11px;
       color: var(--text-dim);
     }
-    .analysis-domain {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
 
+    /* Tools grid */
     .tool-card {
       padding: 20px;
       transition: all 0.2s;
       cursor: pointer;
+      position: relative;
     }
+
     .tool-card:hover {
       border-color: var(--primary);
       transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
-    .tool-icon {
-      font-size: 28px;
-      margin-bottom: 12px;
-    }
-    .tool-name {
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .tool-desc {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-    .tool-tag {
-      margin-top: 10px;
+      box-shadow: var(--shadow-glow);
     }
 
-    .activity-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-subtle);
+    .tool-card.disabled {
+      opacity: 0.5;
+      cursor: default;
     }
-    .activity-item:last-child { border-bottom: none; }
-    .activity-dot {
+
+    .tool-card.disabled:hover {
+      transform: none;
+      border-color: var(--border);
+      box-shadow: none;
+    }
+
+    .tool-icon { font-size: 28px; margin-bottom: 12px; }
+    .tool-name { font-weight: 600; margin-bottom: 4px; }
+    .tool-desc { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+    .tool-tag { margin-top: 10px; }
+
+    /* Notification dot */
+    .notif-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      margin-top: 6px;
-      flex-shrink: 0;
-    }
-    .activity-text {
-      font-size: 14px;
-    }
-    .activity-time {
-      font-size: 12px;
-      color: var(--text-dim);
+      display: inline-block;
     }
 
-    .quick-action {
+    /* Quick compare strip */
+    .quick-compare {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 16px;
+      background: var(--bg);
       border-radius: var(--radius);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-subtle);
       cursor: pointer;
       transition: all 0.15s;
     }
-    .quick-action:hover {
-      background: var(--bg-card);
+
+    .quick-compare:hover {
       border-color: var(--primary);
+      background: var(--primary-glow);
     }
-    .quick-action .qa-icon {
-      font-size: 20px;
+
+    .quick-compare .vs-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      padding: 2px 8px;
+      background: var(--bg-card);
+      border-radius: 999px;
+      border: 1px solid var(--border);
     }
-    .quick-action .qa-label {
+
+    .quick-compare .qc-domain {
       font-weight: 500;
       font-size: 14px;
     }
-    .quick-action .qa-desc {
-      font-size: 12px;
-      color: var(--text-muted);
+
+    .quick-compare .qc-score {
+      font-family: var(--font-mono);
+      font-weight: 700;
     }
 
-    .upgrade-banner {
-      background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
-      border: 1px solid rgba(59,130,246,0.3);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-    }
-    .upgrade-banner h3 {
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
-    .upgrade-banner p {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    /* Prototype watermark */
-    .watermark {
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      background: var(--danger);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 600;
-      z-index: 1000;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+    .quick-compare .qc-arrow {
+      color: var(--text-dim);
+      margin-left: auto;
     }
   </style>
 </head>
 <body>
 
-<div class="watermark">MAQUETTE — Prototype</div>
+<div class="watermark">MAQUETTE V2 — Prototype</div>
 
 <div class="layout">
   <!-- ===== SIDEBAR ===== -->
   <nav class="sidebar">
     <div class="sidebar-logo">
-      <span>SA</span> SaaS Anatomy
+      <span class="logo-mark">SA</span> SaaS Anatomy
     </div>
 
     <div class="sidebar-section">
@@ -160,29 +256,29 @@
         <span class="icon">📊</span> Dashboard
       </a>
       <a class="sidebar-link" href="#">
-        <span class="icon">📝</span> Mes analyses
+        <span class="icon">🎯</span> Mes concurrents
       </a>
       <a class="sidebar-link" href="#">
-        <span class="icon">🌐</span> Mes sites
+        <span class="icon">📝</span> Mes analyses
       </a>
     </div>
 
     <div class="sidebar-section">
       <div class="sidebar-section-title">Outils</div>
       <a class="sidebar-link" href="#">
-        <span class="icon">🎯</span> Analyseur Landing Page
+        <span class="icon">🔍</span> Analyseur Landing Page
       </a>
       <a class="sidebar-link" href="#">
-        <span class="icon">📧</span> Analyseur Emails
-        <span class="badge badge-primary" style="margin-left:auto;">Soon</span>
+        <span class="icon">💰</span> Analyseur Pricing Page
+        <span class="badge-soon">V2</span>
       </a>
       <a class="sidebar-link" href="#">
-        <span class="icon">💰</span> Audit Pricing
-        <span class="badge badge-primary" style="margin-left:auto;">Soon</span>
+        <span class="icon">📈</span> Analyseur Contenu
+        <span class="badge-soon">V2</span>
       </a>
       <a class="sidebar-link" href="#">
-        <span class="icon">🔍</span> Audit SEO
-        <span class="badge badge-primary" style="margin-left:auto;">Soon</span>
+        <span class="icon">⭐</span> Analyseur Satisfaction
+        <span class="badge-soon">V2</span>
       </a>
     </div>
 
@@ -190,9 +286,6 @@
       <div class="sidebar-section-title">Ressources</div>
       <a class="sidebar-link" href="#">
         <span class="icon">📖</span> Blog
-      </a>
-      <a class="sidebar-link" href="#">
-        <span class="icon">💡</span> Guides
       </a>
     </div>
 
@@ -203,8 +296,10 @@
       <a class="sidebar-link" href="#">
         <span class="icon">👤</span> Mon compte
       </a>
-      <div style="padding: 12px 8px; font-size: 12px; color: var(--text-dim);">
-        Plan gratuit — <a href="#" style="color: var(--primary);">Passer Pro</a>
+      <div class="sidebar-plan">
+        <div class="sidebar-plan-label">Plan actuel</div>
+        <div class="sidebar-plan-name">Gratuit</div>
+        <button class="sidebar-plan-cta">Passer Pro →</button>
       </div>
     </div>
   </nav>
@@ -214,235 +309,299 @@
 
     <!-- Page Header -->
     <div class="page-header">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="flex justify-between items-center">
         <div>
-          <div class="page-title">Bonjour 👋</div>
-          <div class="page-subtitle">Voici un aperçu de vos analyses et outils.</div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-subtitle">Vue d'ensemble de votre site et de vos concurrents</div>
         </div>
-        <button class="btn btn-primary">+ Nouvelle analyse</button>
+        <div class="flex gap-8">
+          <button class="btn btn-ghost">🔄 Refresh</button>
+          <button class="btn btn-primary">+ Nouvelle analyse</button>
+        </div>
       </div>
     </div>
 
-    <!-- Upgrade Banner (pour free users) -->
-    <div class="upgrade-banner">
-      <div>
-        <h3>Passez au plan Pro</h3>
-        <p>Analyses illimitées, suivi d'évolution, exports PDF et accès à tous les outils.</p>
+    <!-- ===== MON SITE (hero card) ===== -->
+    <div class="card card-primary card-glow" style="margin-bottom: 24px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Mon site</div>
+          <div class="card-subtitle">Dernière analyse il y a 2 jours</div>
+        </div>
+        <div class="flex gap-8 items-center">
+          <span class="delta delta-up">▲ +5 pts cette semaine</span>
+          <button class="btn btn-ghost btn-sm">Voir le rapport</button>
+        </div>
       </div>
-      <button class="btn btn-primary">Voir les plans</button>
+
+      <div class="my-site-card">
+        <!-- Score principal -->
+        <div class="my-site-score">
+          <div class="score-circle score-circle-xl score-mid">68</div>
+          <div class="label">Score /100</div>
+        </div>
+
+        <!-- Infos + critères mini -->
+        <div class="my-site-info">
+          <div class="my-site-url">monsite-saas.fr</div>
+          <div class="my-site-meta">
+            <span>🔗 https://monsite-saas.fr</span>
+            <span>📅 Prochaine ré-analyse dans 5 jours</span>
+          </div>
+
+          <!-- Top critères (résumé rapide) -->
+          <div class="criteria-mini">
+            <div class="criteria-mini-item">
+              <div class="score" style="color: var(--success);">8</div>
+              <div class="name">Clarté</div>
+            </div>
+            <div class="criteria-mini-item">
+              <div class="score" style="color: var(--success);">7</div>
+              <div class="name">Audience</div>
+            </div>
+            <div class="criteria-mini-item">
+              <div class="score" style="color: var(--warning);">6</div>
+              <div class="name">Valeur</div>
+            </div>
+            <div class="criteria-mini-item">
+              <div class="score" style="color: var(--danger);">4</div>
+              <div class="name">CTA</div>
+            </div>
+            <div class="criteria-mini-item">
+              <div class="score" style="color: var(--warning);">5</div>
+              <div class="name">Preuve</div>
+            </div>
+            <div class="criteria-mini-item">
+              <div class="score" style="color: var(--success);">8</div>
+              <div class="name">Problème</div>
+            </div>
+            <div class="criteria-mini-item">
+              <div class="score" style="color: var(--success);">7</div>
+              <div class="name">Résultat</div>
+            </div>
+            <div class="criteria-mini-item">
+              <div class="score" style="color: var(--danger);">3</div>
+              <div class="name">Différence</div>
+            </div>
+            <div class="criteria-mini-item">
+              <div class="score" style="color: var(--warning);">6</div>
+              <div class="name">Objections</div>
+            </div>
+            <div class="criteria-mini-item">
+              <div class="score" style="color: var(--success);">8</div>
+              <div class="name">Structure</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mini sparkline évolution -->
+        <div style="text-align: center;">
+          <div class="sparkline">
+            <div class="sparkline-bar" style="height: 40%;"></div>
+            <div class="sparkline-bar" style="height: 50%;"></div>
+            <div class="sparkline-bar" style="height: 45%;"></div>
+            <div class="sparkline-bar" style="height: 60%;"></div>
+            <div class="sparkline-bar" style="height: 55%;"></div>
+            <div class="sparkline-bar" style="height: 65%;"></div>
+            <div class="sparkline-bar" style="height: 68%;"></div>
+          </div>
+          <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">7 dernières semaines</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Stats Overview -->
+    <!-- ===== 2 COLONNES : Concurrents + Activité ===== -->
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; margin-bottom: 24px;">
+
+      <!-- Mes concurrents -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Mes concurrents</div>
+            <div class="card-subtitle">1 / 1 concurrent (plan gratuit)</div>
+          </div>
+          <a href="competitors.html" class="btn btn-ghost btn-sm">Gérer →</a>
+        </div>
+
+        <!-- Concurrent existant -->
+        <div class="competitor-item">
+          <div class="competitor-rank">01</div>
+          <div class="score-circle score-high" style="width:40px; height:40px; font-size:14px;">82</div>
+          <div class="competitor-domain">
+            <div>stripe.com</div>
+            <div style="font-size: 12px; color: var(--text-dim);">Analysé il y a 3 jours</div>
+          </div>
+          <div class="competitor-delta">
+            <span class="delta delta-up">▲ +2</span>
+          </div>
+          <div class="competitor-actions">
+            <a href="comparative.html" class="btn btn-ghost btn-sm">Comparer</a>
+          </div>
+        </div>
+
+        <!-- Slot verrouillé -->
+        <div style="padding: 16px 0; text-align: center; border-top: 1px dashed var(--border);">
+          <div style="color: var(--text-dim); font-size: 13px; margin-bottom: 8px;">
+            🔒 Ajoutez jusqu'à 4 concurrents avec le plan Pro
+          </div>
+          <button class="btn btn-ghost btn-sm">Passer Pro →</button>
+        </div>
+
+        <!-- Quick compare strip -->
+        <hr class="separator">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">Comparaison rapide</div>
+        <a href="comparative.html" class="quick-compare">
+          <span class="qc-domain">monsite-saas.fr</span>
+          <span class="qc-score score-mid" style="background: none; border: none; font-size: 14px;">68</span>
+          <span class="vs-badge">VS</span>
+          <span class="qc-score score-high" style="background: none; border: none; color: var(--success); font-size: 14px;">82</span>
+          <span class="qc-domain">stripe.com</span>
+          <span class="qc-arrow">→</span>
+        </a>
+      </div>
+
+      <!-- Activité & Insights -->
+      <div class="flex flex-col gap-16" style="gap: 24px;">
+        <!-- Insights rapides -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Insights</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; align-items: flex-start; gap: 10px; padding: 10px; background: var(--success-glow); border-radius: var(--radius); border: 1px solid rgba(34,197,94,0.15);">
+              <span style="font-size: 16px;">✅</span>
+              <div>
+                <div style="font-size: 13px; font-weight: 500;">Tu es meilleur en Clarté et Structure</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Tu bats stripe.com sur ces 2 critères</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; padding: 10px; background: var(--danger-glow); border-radius: var(--radius); border: 1px solid rgba(239,68,68,0.15);">
+              <span style="font-size: 16px;">⚠️</span>
+              <div>
+                <div style="font-size: 13px; font-weight: 500;">CTA et Différenciation à améliorer</div>
+                <div style="font-size: 12px; color: var(--text-muted);">stripe.com te devance de +4 pts sur le CTA</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; padding: 10px; background: var(--primary-glow); border-radius: var(--radius); border: 1px solid rgba(59,130,246,0.15);">
+              <span style="font-size: 16px;">💡</span>
+              <div>
+                <div style="font-size: 13px; font-weight: 500;">Priorité : améliore ton CTA</div>
+                <div style="font-size: 12px; color: var(--text-muted);">C'est ce qui aura le plus d'impact sur ton score global</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activité récente -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Activité</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0;">
+            <div style="display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
+              <span class="notif-dot" style="background: var(--success); margin-top: 5px;"></span>
+              <div>
+                <div style="font-size: 13px;">Ré-analyse auto de <strong>monsite-saas.fr</strong></div>
+                <div style="font-size: 12px; color: var(--text-dim);">Score 68 → 68 (=) · Il y a 2 jours</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
+              <span class="notif-dot" style="background: var(--primary); margin-top: 5px;"></span>
+              <div>
+                <div style="font-size: 13px;">Ré-analyse auto de <strong>stripe.com</strong></div>
+                <div style="font-size: 12px; color: var(--text-dim);">Score 80 → 82 (+2) · Il y a 3 jours</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
+              <span class="notif-dot" style="background: var(--warning); margin-top: 5px;"></span>
+              <div>
+                <div style="font-size: 13px;">Refresh manuel de <strong>monsite-saas.fr</strong></div>
+                <div style="font-size: 12px; color: var(--text-dim);">Score 63 → 68 (+5) · Il y a 1 semaine</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 10px; padding: 10px 0;">
+              <span class="notif-dot" style="background: var(--accent); margin-top: 5px;"></span>
+              <div>
+                <div style="font-size: 13px;"><strong>stripe.com</strong> ajouté comme concurrent</div>
+                <div style="font-size: 12px; color: var(--text-dim);">Il y a 3 semaines</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Stats overview ===== -->
     <div class="grid-4" style="margin-bottom: 24px;">
       <div class="card stat">
-        <div class="stat-value">12</div>
-        <div class="stat-label">Analyses totales</div>
-        <div class="stat-change up">+3 ce mois</div>
+        <div class="stat-value" style="color: var(--warning);">68</div>
+        <div class="stat-label">Mon score</div>
+        <div class="stat-change up">+5 pts vs semaine dernière</div>
       </div>
       <div class="card stat">
-        <div class="stat-value">68</div>
-        <div class="stat-label">Score moyen</div>
-        <div class="stat-change up">+5 pts vs mois dernier</div>
+        <div class="stat-value" style="color: var(--success);">82</div>
+        <div class="stat-label">Meilleur concurrent</div>
+        <div class="stat-change neutral">stripe.com</div>
       </div>
       <div class="card stat">
-        <div class="stat-value">4</div>
-        <div class="stat-label">Sites suivis</div>
-        <div class="stat-change">—</div>
+        <div class="stat-value" style="color: var(--danger);">-14</div>
+        <div class="stat-label">Écart</div>
+        <div class="stat-change down">Tu es à 14 pts derrière</div>
       </div>
       <div class="card stat">
-        <div class="stat-value">2/3</div>
-        <div class="stat-label">Analyses restantes (jour)</div>
-        <div class="stat-change" style="color:var(--text-dim);">Reset dans 18h</div>
+        <div class="stat-value">0/1</div>
+        <div class="stat-label">Refresh restants (jour)</div>
+        <div class="stat-change neutral">Reset dans 18h</div>
       </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
-
-      <!-- Dernières analyses -->
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Dernières analyses</div>
-            <div class="card-subtitle">Vos analyses les plus récentes</div>
-          </div>
-          <a href="#" class="btn btn-ghost btn-sm">Voir tout</a>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Site</th>
-                <th>Score</th>
-                <th>Grade</th>
-                <th>Date</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="analysis-url">stripe.com</div>
-                  <div class="analysis-domain">https://stripe.com/fr</div>
-                </td>
-                <td><strong>82</strong>/100</td>
-                <td><span class="badge badge-success">A</span></td>
-                <td class="analysis-date">Il y a 2h</td>
-                <td><a href="#" class="btn btn-ghost btn-sm">Voir</a></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="analysis-url">lemlist.com</div>
-                  <div class="analysis-domain">https://lemlist.com</div>
-                </td>
-                <td><strong>71</strong>/100</td>
-                <td><span class="badge badge-success">B</span></td>
-                <td class="analysis-date">Hier</td>
-                <td><a href="#" class="btn btn-ghost btn-sm">Voir</a></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="analysis-url">monsite-saas.fr</div>
-                  <div class="analysis-domain">https://monsite-saas.fr</div>
-                </td>
-                <td><strong>45</strong>/100</td>
-                <td><span class="badge badge-warning">C</span></td>
-                <td class="analysis-date">Il y a 3 jours</td>
-                <td><a href="#" class="btn btn-ghost btn-sm">Voir</a></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="analysis-url">bad-landing.io</div>
-                  <div class="analysis-domain">https://bad-landing.io</div>
-                </td>
-                <td><strong>28</strong>/100</td>
-                <td><span class="badge badge-danger">D</span></td>
-                <td class="analysis-date">Il y a 1 semaine</td>
-                <td><a href="#" class="btn btn-ghost btn-sm">Voir</a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Activité récente -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Activité récente</div>
-        </div>
-        <div class="activity-item">
-          <div class="activity-dot" style="background: var(--success);"></div>
-          <div>
-            <div class="activity-text">Analyse de <strong>stripe.com</strong> terminée</div>
-            <div class="activity-time">Il y a 2 heures</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="activity-dot" style="background: var(--primary);"></div>
-          <div>
-            <div class="activity-text">Suggestions de réécriture générées pour <strong>monsite-saas.fr</strong></div>
-            <div class="activity-time">Hier à 14h30</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="activity-dot" style="background: var(--success);"></div>
-          <div>
-            <div class="activity-text">Analyse de <strong>lemlist.com</strong> terminée</div>
-            <div class="activity-time">Hier à 10h15</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="activity-dot" style="background: var(--accent);"></div>
-          <div>
-            <div class="activity-text">Compte créé</div>
-            <div class="activity-time">Il y a 1 semaine</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Outils disponibles -->
+    <!-- ===== Outils (4 leviers) ===== -->
     <div class="card" style="margin-bottom: 24px;">
       <div class="card-header">
         <div>
-          <div class="card-title">Outils disponibles</div>
-          <div class="card-subtitle">Analysez et améliorez chaque aspect de votre présence en ligne</div>
+          <div class="card-title">Outils d'analyse</div>
+          <div class="card-subtitle">Un outil par levier de croissance</div>
         </div>
       </div>
 
-      <div class="grid-3">
+      <div class="grid-4">
         <div class="card tool-card">
           <div class="tool-icon">🎯</div>
-          <div class="tool-name">Analyseur Landing Page</div>
-          <div class="tool-desc">Analysez le copywriting de votre landing page sur 10 critères avec l'IA.</div>
-          <div class="tool-tag"><span class="badge badge-success">Disponible</span></div>
+          <div class="tool-name">Landing Page</div>
+          <div class="tool-desc">Copywriting & conversion de ta landing page</div>
+          <div class="tool-tag"><span class="badge badge-success">Actif</span></div>
         </div>
 
-        <div class="card tool-card" style="opacity: 0.7;">
-          <div class="tool-icon">📧</div>
-          <div class="tool-name">Analyseur d'Emails</div>
-          <div class="tool-desc">Évaluez vos emails de vente, onboarding et newsletters.</div>
-          <div class="tool-tag"><span class="badge badge-primary">Bientôt</span></div>
-        </div>
-
-        <div class="card tool-card" style="opacity: 0.7;">
+        <div class="card tool-card disabled">
           <div class="tool-icon">💰</div>
-          <div class="tool-name">Audit Pricing Page</div>
-          <div class="tool-desc">Analysez la persuasion et la clarté de votre page de tarification.</div>
-          <div class="tool-tag"><span class="badge badge-primary">Bientôt</span></div>
+          <div class="tool-name">Pricing Page</div>
+          <div class="tool-desc">Persuasion & clarté de ta page de tarification</div>
+          <div class="tool-tag"><span class="badge badge-accent">V2</span></div>
         </div>
 
-        <div class="card tool-card" style="opacity: 0.7;">
-          <div class="tool-icon">🔍</div>
-          <div class="tool-name">Audit SEO Basique</div>
-          <div class="tool-desc">Vérifiez les fondamentaux SEO : meta, titres, structure, mobile.</div>
-          <div class="tool-tag"><span class="badge badge-primary">Bientôt</span></div>
-        </div>
-
-        <div class="card tool-card" style="opacity: 0.7;">
-          <div class="tool-icon">📊</div>
-          <div class="tool-name">Comparateur A/B</div>
-          <div class="tool-desc">Comparez deux landing pages côte à côte et identifiez la meilleure.</div>
-          <div class="tool-tag"><span class="badge badge-primary">Bientôt</span></div>
-        </div>
-
-        <div class="card tool-card" style="opacity: 0.7;">
+        <div class="card tool-card disabled">
           <div class="tool-icon">📈</div>
-          <div class="tool-name">Suivi d'Évolution</div>
-          <div class="tool-desc">Re-analysez après corrections et voyez votre progression.</div>
-          <div class="tool-tag"><span class="badge badge-primary">Bientôt</span></div>
+          <div class="tool-name">Stratégie Contenu</div>
+          <div class="tool-desc">SEO, régularité et maturité de ta stratégie contenu</div>
+          <div class="tool-tag"><span class="badge badge-accent">V2</span></div>
+        </div>
+
+        <div class="card tool-card disabled">
+          <div class="tool-icon">⭐</div>
+          <div class="tool-name">Satisfaction Client</div>
+          <div class="tool-desc">Analyse des avis publics G2, Capterra, Product Hunt</div>
+          <div class="tool-tag"><span class="badge badge-accent">V2</span></div>
         </div>
       </div>
     </div>
 
-    <!-- Actions rapides -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Actions rapides</div>
+    <!-- ===== Upgrade banner ===== -->
+    <div class="upgrade-banner">
+      <div>
+        <h3>🚀 Débloquez plus de concurrents et la vue multi-comparative</h3>
+        <p>Plan Pro : analyses illimitées, jusqu'à 4 concurrents, historique 6 mois.</p>
       </div>
-      <div class="grid-3">
-        <div class="quick-action">
-          <span class="qa-icon">🚀</span>
-          <div>
-            <div class="qa-label">Analyser une URL</div>
-            <div class="qa-desc">Lancez une nouvelle analyse de landing page</div>
-          </div>
-        </div>
-        <div class="quick-action">
-          <span class="qa-icon">📄</span>
-          <div>
-            <div class="qa-label">Exporter un rapport</div>
-            <div class="qa-desc">Téléchargez un PDF de votre dernière analyse</div>
-          </div>
-        </div>
-        <div class="quick-action">
-          <span class="qa-icon">🔗</span>
-          <div>
-            <div class="qa-label">Partager un résultat</div>
-            <div class="qa-desc">Envoyez un lien vers une analyse</div>
-          </div>
-        </div>
-      </div>
+      <button class="btn btn-primary">Voir les plans →</button>
     </div>
 
   </main>

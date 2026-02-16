@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Concurrents — SaaS Anatomy (Maquette)</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    /* === Competitors-specific styles === */
+
+    /* Add competitor form */
+    .add-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .add-form .input {
+      flex: 1;
+    }
+
+    /* Limit indicator */
+    .limit-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .limit-track {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .limit-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .limit-fill.full {
+      background: var(--warning);
+    }
+
+    .limit-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Competitor card */
+    .competitor-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      margin-bottom: 12px;
+      transition: all 0.15s;
+    }
+
+    .competitor-card:hover {
+      border-color: var(--primary);
+    }
+
+    .competitor-card .cc-score {
+      text-align: center;
+    }
+
+    .competitor-card .cc-info {
+      flex: 1;
+    }
+
+    .competitor-card .cc-domain {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .competitor-card .cc-url {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .competitor-card .cc-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .competitor-card .cc-mini-scores {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .competitor-card .cc-mini-score {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .competitor-card .cc-evolution {
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .competitor-card .cc-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* Locked slot card */
+    .locked-slot {
+      border: 2px dashed var(--border);
+      background: transparent;
+      text-align: center;
+      padding: 32px;
+      cursor: default;
+    }
+
+    .locked-slot .slot-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      opacity: 0.4;
+    }
+
+    .locked-slot .slot-text {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    /* Comparison quick-action */
+    .compare-action {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-primary);
+      background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(139,92,246,0.03));
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 12px;
+    }
+
+    .compare-action:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .compare-action .ca-icon {
+      font-size: 24px;
+    }
+
+    .compare-action .ca-text {
+      flex: 1;
+    }
+
+    .compare-action .ca-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .compare-action .ca-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .compare-action .ca-arrow {
+      font-size: 18px;
+      color: var(--primary);
+    }
+
+    /* History mini-table */
+    .history-mini {
+      font-size: 13px;
+    }
+
+    .history-mini .hm-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .history-mini .hm-row:last-child { border-bottom: none; }
+
+    .history-mini .hm-date {
+      color: var(--text-dim);
+      font-size: 12px;
+      min-width: 80px;
+    }
+
+    .history-mini .hm-score {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      min-width: 40px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="watermark">MAQUETTE — Prototype</div>
+
+<div class="layout">
+  <!-- ===== SIDEBAR ===== -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-mark">SA</span> SaaS Anatomy
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Principal</div>
+      <a class="sidebar-link" href="../dashboard/">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a class="sidebar-link active" href="#">
+        <span class="icon">🎯</span> Mes concurrents
+      </a>
+      <a class="sidebar-link" href="#">
+        <span class="icon">📝</span> Mes analyses
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Outils</div>
+      <a class="sidebar-link" href="#">
+        <span class="icon">🔍</span> Analyseur Landing Page
+      </a>
+      <a class="sidebar-link" href="#">
+        <span class="icon">💰</span> Analyseur Pricing Page
+        <span class="badge-soon">V2</span>
+      </a>
+      <a class="sidebar-link" href="#">
+        <span class="icon">📈</span> Analyseur Contenu
+        <span class="badge-soon">V2</span>
+      </a>
+      <a class="sidebar-link" href="#">
+        <span class="icon">⭐</span> Analyseur Satisfaction
+        <span class="badge-soon">V2</span>
+      </a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <a class="sidebar-link" href="#">
+        <span class="icon">⚙️</span> Paramètres
+      </a>
+      <div class="sidebar-plan">
+        <div class="sidebar-plan-label">Plan actuel</div>
+        <div class="sidebar-plan-name">Gratuit</div>
+        <button class="sidebar-plan-cta">Passer Pro →</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="flex justify-between items-center">
+        <div>
+          <div class="page-title">Mes concurrents</div>
+          <div class="page-subtitle">Ajoutez des concurrents pour les comparer à votre site</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Limit indicator -->
+    <div class="limit-bar">
+      <div class="limit-track">
+        <div class="limit-fill full" style="width: 100%;"></div>
+      </div>
+      <div class="limit-text">
+        <strong>1 / 1</strong> concurrent · <a href="#" style="color: var(--primary);">Passer Pro pour +3 →</a>
+      </div>
+    </div>
+
+    <!-- Add competitor form -->
+    <div class="add-form">
+      <input class="input input-lg" type="url" placeholder="https://concurrent.com" disabled style="opacity: 0.5;">
+      <button class="btn btn-primary btn-lg" disabled style="opacity: 0.5;">Ajouter</button>
+    </div>
+    <div class="hint" style="margin-top: -16px; margin-bottom: 24px;">
+      🔒 Limite atteinte. Passez au plan Pro pour ajouter jusqu'à 4 concurrents.
+    </div>
+
+    <!-- ===== Mon site (reference) ===== -->
+    <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em;">Mon site (référence)</div>
+    <div class="card competitor-card" style="border-color: var(--border-primary); margin-bottom: 24px;">
+      <div class="cc-score">
+        <div class="score-circle score-circle-lg score-mid">68</div>
+      </div>
+      <div class="cc-info">
+        <div class="cc-domain">monsite-saas.fr</div>
+        <div class="cc-url">https://monsite-saas.fr</div>
+        <div class="cc-meta">
+          <span>📅 Dernière analyse : il y a 2 jours</span>
+          <span>🔄 Prochaine ré-analyse : dans 5 jours</span>
+          <span class="delta delta-up">▲ +5 pts cette semaine</span>
+        </div>
+        <div class="cc-mini-scores">
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">8</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">7</div>
+          <div class="cc-mini-score" style="background: var(--warning-glow); color: var(--warning);">6</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">7</div>
+          <div class="cc-mini-score" style="background: var(--danger-glow); color: var(--danger);">4</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">8</div>
+          <div class="cc-mini-score" style="background: var(--warning-glow); color: var(--warning);">5</div>
+          <div class="cc-mini-score" style="background: var(--danger-glow); color: var(--danger);">3</div>
+          <div class="cc-mini-score" style="background: var(--warning-glow); color: var(--warning);">6</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">8</div>
+        </div>
+      </div>
+      <div class="cc-actions">
+        <button class="btn btn-ghost btn-sm">Voir le rapport</button>
+        <button class="btn btn-ghost btn-sm">🔄 Refresh</button>
+      </div>
+    </div>
+
+    <!-- ===== Concurrents ===== -->
+    <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em;">Concurrents (1)</div>
+
+    <!-- Concurrent 1 : stripe.com -->
+    <div class="card competitor-card">
+      <div class="cc-score">
+        <div class="score-circle score-circle-lg score-high">82</div>
+      </div>
+      <div class="cc-info">
+        <div class="cc-domain">stripe.com</div>
+        <div class="cc-url">https://stripe.com/fr</div>
+        <div class="cc-meta">
+          <span>📅 Dernière analyse : il y a 3 jours</span>
+          <span>🔄 Prochaine : dans 4 jours</span>
+          <span class="delta delta-up">▲ +2 pts</span>
+        </div>
+        <div class="cc-mini-scores">
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">7</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">7</div>
+          <div class="cc-mini-score" style="background: var(--warning-glow); color: var(--warning);">6</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">9</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">8</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">7</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">9</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">9</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">8</div>
+          <div class="cc-mini-score" style="background: var(--success-glow); color: var(--success);">7</div>
+        </div>
+      </div>
+      <div class="cc-evolution">
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); margin-bottom: 4px;">Historique</div>
+        <div class="history-mini">
+          <div class="hm-row">
+            <span class="hm-date">Sem. -3</span>
+            <span class="hm-score">78</span>
+            <span class="delta delta-neutral">—</span>
+          </div>
+          <div class="hm-row">
+            <span class="hm-date">Sem. -2</span>
+            <span class="hm-score">79</span>
+            <span class="delta delta-up">+1</span>
+          </div>
+          <div class="hm-row">
+            <span class="hm-date">Sem. -1</span>
+            <span class="hm-score">80</span>
+            <span class="delta delta-up">+1</span>
+          </div>
+          <div class="hm-row">
+            <span class="hm-date">Actuel</span>
+            <span class="hm-score" style="color: var(--success);">82</span>
+            <span class="delta delta-up">+2</span>
+          </div>
+        </div>
+      </div>
+      <div class="cc-actions">
+        <a href="../comparative/" class="btn btn-primary btn-sm">Comparer</a>
+        <button class="btn btn-ghost btn-sm">Voir rapport</button>
+        <button class="btn btn-danger-ghost btn-sm">Supprimer</button>
+      </div>
+    </div>
+
+    <!-- Slot verrouillé 2 -->
+    <div class="card locked-slot" style="margin-top: 12px;">
+      <div class="slot-icon">🔒</div>
+      <div class="slot-text">Emplacement concurrent #2 — Plan Pro requis</div>
+    </div>
+
+    <!-- Slot verrouillé 3 -->
+    <div class="card locked-slot" style="margin-top: 12px;">
+      <div class="slot-icon">🔒</div>
+      <div class="slot-text">Emplacement concurrent #3 — Plan Pro requis</div>
+    </div>
+
+    <!-- Slot verrouillé 4 -->
+    <div class="card locked-slot" style="margin-top: 12px; margin-bottom: 32px;">
+      <div class="slot-icon">🔒</div>
+      <div class="slot-text">Emplacement concurrent #4 — Plan Pro requis</div>
+    </div>
+
+    <!-- Actions de comparaison -->
+    <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em;">Actions</div>
+
+    <a href="../comparative/" class="compare-action">
+      <span class="ca-icon">⚔️</span>
+      <div class="ca-text">
+        <div class="ca-title">Comparer monsite-saas.fr vs stripe.com</div>
+        <div class="ca-desc">Vue détaillée critère par critère avec recommandations contextualisées</div>
+      </div>
+      <span class="ca-arrow">→</span>
+    </a>
+
+    <div class="compare-action" style="opacity: 0.5; cursor: not-allowed;">
+      <span class="ca-icon">📊</span>
+      <div class="ca-text">
+        <div class="ca-title">Vue multi-comparative</div>
+        <div class="ca-desc">Comparez votre site à tous vos concurrents d'un coup — Plan Pro requis</div>
+      </div>
+      <span class="badge badge-accent" style="margin-left: auto;">Pro</span>
+    </div>
+
+    <!-- Upgrade banner -->
+    <div class="upgrade-banner" style="margin-top: 32px;">
+      <div>
+        <h3>🚀 Plus de concurrents = plus d'insights</h3>
+        <p>Avec le plan Pro, ajoutez jusqu'à 4 concurrents et débloquez la vue multi-comparative.</p>
+      </div>
+      <button class="btn btn-primary">Voir les plans →</button>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
