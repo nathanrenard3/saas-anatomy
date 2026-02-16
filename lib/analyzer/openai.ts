@@ -16,13 +16,11 @@ interface AIAnalysisResult {
   url: string;
   domain: string;
   score_global: number;
-  grade_global: "A" | "B" | "C" | "D" | "F";
   resume: string;
   criteres: Array<{
     id: string;
     nom: string;
     score: number;
-    grade: "A" | "B" | "C" | "D" | "F";
     explication: string;
     recommandation: string;
     elements_trouves: string[];

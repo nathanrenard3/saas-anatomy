@@ -103,13 +103,11 @@ export function buildAnalysisPrompt(scraped: ScrapedContent, url: string, locale
       const dots = i === 0
         ? `
       "score": <1-10>,
-      "grade": <"A"|"B"|"C"|"D"|"F">,
       "explication": "<2-3 ${labels.summary}>",
       "recommandation": "<1-2 actionable sentences>",
       "elements_trouves": ["<specific element found or missing>"]`
         : `
       "score": <1-10>,
-      "grade": <"A"|"B"|"C"|"D"|"F">,
       "explication": "...",
       "recommandation": "...",
       "elements_trouves": [...]`;
@@ -147,7 +145,6 @@ ${labels.analyzeOutro} :
   "url": "${url}",
   "domain": "${new URL(url).hostname}",
   "score_global": <number 0-100>,
-  "grade_global": <"A"|"B"|"C"|"D"|"F">,
   "resume": "<2-3 ${labels.summary}>",
   "criteres": [
 ${criteriaJson}

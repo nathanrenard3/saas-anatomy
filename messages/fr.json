@@ -168,10 +168,10 @@
     "metaOgDescription": "Audite le copywriting de ta page en 30 secondes. 10 critères analysés par IA avec recommandations concrètes.",
     "toolSchemaName": "Audit Copywriting SaaS",
     "toolSchemaDescription": "Outil gratuit d'audit copywriting pour fondateurs SaaS. Score sur 10 critères avec recommandations actionables.",
-    "reportMetaTitle": "{domain} - Score {score}/100 ({grade}) | Audit Copywriting",
+    "reportMetaTitle": "{domain} - Score {score}/100 | Audit Copywriting",
     "reportMetaDescription": "Résultat de l'audit copywriting de {domain}. Score global : {score}/100. Découvre l'analyse détaillée sur 10 critères.",
     "reportOgAlt": "Audit copywriting de {domain}",
-    "reportTwitterTitle": "{domain} : {score}/100 ({grade})",
+    "reportTwitterTitle": "{domain} : {score}/100",
     "reportSchemaName": "Audit copywriting de {domain}",
     "reportSchemaScore": "Score global : {score}/100"
   },

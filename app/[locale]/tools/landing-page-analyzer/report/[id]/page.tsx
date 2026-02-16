@@ -13,14 +13,6 @@ const siteUrl = "https://saas-anatomy.com";
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function scoreToGrade(score: number): string {
-  if (score >= 80) return "A";
-  if (score >= 60) return "B";
-  if (score >= 40) return "C";
-  if (score >= 20) return "D";
-  return "F";
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -40,11 +32,9 @@ export async function generateMetadata({
     return { title: t("reportNotFound") };
   }
 
-  const grade = scoreToGrade(analysis.overallScore);
   const title = t("reportMetaTitle", {
     domain: analysis.domain,
     score: analysis.overallScore,
-    grade,
   });
   const description = t("reportMetaDescription", {
     domain: analysis.domain,
@@ -75,7 +65,6 @@ export async function generateMetadata({
       title: t("reportTwitterTitle", {
         domain: analysis.domain,
         score: analysis.overallScore,
-        grade,
       }),
       description,
       images: [`${siteUrl}/tools/landing-page-analyzer/report/${id}/og`],
@@ -122,7 +111,6 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
   const rawResult = analysis.analysisResult as {
     score_global: number;
-    grade_global: "A" | "B" | "C" | "D" | "F";
     resume: string;
     criteres: AnalysisResult["criteres"];
     points_forts: string[];
